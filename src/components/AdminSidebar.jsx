@@ -9,16 +9,18 @@ import {
   HiOutlineUser,
   HiOutlineHeart,
   HiOutlineAcademicCap,
+  HiOutlineHome,
+  HiOutlineMail,
 } from 'react-icons/hi'
 
 const menuItems = [
   { id: 'Overview', icon: HiOutlineViewGrid, label: 'Overview' },
-  { id: 'Profile', icon: HiOutlineUser, label: 'Profile' },
+  { id: 'Home', icon: HiOutlineHome, label: 'Home Page' },
+  { id: 'About', icon: HiOutlineUser, label: 'About Page' },
   { id: 'Projects', icon: HiOutlineBriefcase, label: 'Projects' },
   { id: 'Skills', icon: HiOutlineDocumentText, label: 'Skills' },
   { id: 'Experience', icon: HiOutlineChatAlt2, label: 'Experience' },
-  { id: 'Education', icon: HiOutlineAcademicCap, label: 'Education' },
-  { id: 'Values', icon: HiOutlineHeart, label: 'My Values' },
+  { id: 'Contact', icon: HiOutlineMail, label: 'Contact & Inbox' },
 ]
 
 export default function AdminSidebar() {
@@ -32,7 +34,7 @@ export default function AdminSidebar() {
   }
 
   return (
-    <aside className="w-64 min-h-screen bg-gradient-to-b from-[#2d2a32] to-[#1e1b22] text-white flex flex-col">
+    <aside className="w-64 h-screen bg-gradient-to-b from-[#2d2a32] to-[#1e1b22] text-white flex flex-col shrink-0">
       {/* Brand */}
       <div className="px-6 py-6 border-b border-white/10">
         <div className="flex items-center gap-3">

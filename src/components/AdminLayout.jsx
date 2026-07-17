@@ -4,7 +4,7 @@ import { HiOutlineBell, HiOutlineSearch } from 'react-icons/hi'
 
 export default function AdminLayout() {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <AdminSidebar />
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}

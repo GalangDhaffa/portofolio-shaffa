@@ -1,20 +1,85 @@
-import { useState } from 'react'
-import { FiMail, FiMapPin, FiPhone, FiSend, FiGithub, FiLinkedin, FiTwitter, FiCheckCircle } from 'react-icons/fi'
+import { useState, useEffect } from 'react'
+import { FiMail, FiMapPin, FiPhone, FiSend, FiCheckCircle, FiGithub, FiLinkedin, FiTwitter, FiInstagram, FiYoutube, FiLink, FiFacebook } from 'react-icons/fi'
+import { FaWhatsapp, FaTiktok, FaTelegram, FaDiscord } from 'react-icons/fa'
+import { getProfile, addItem } from '../utils/dataStore'
+import Swal from 'sweetalert2'
+
+const socialIconMap = {
+  github: FiGithub,
+  linkedin: FiLinkedin,
+  twitter: FiTwitter,
+  x: FiTwitter,
+  instagram: FiInstagram,
+  youtube: FiYoutube,
+  facebook: FiFacebook,
+  whatsapp: FaWhatsapp,
+  tiktok: FaTiktok,
+  telegram: FaTelegram,
+  discord: FaDiscord,
+}
+
+const getSocialIcon = (name) => {
+  const key = (name || '').toLowerCase().trim()
+  for (const [keyword, icon] of Object.entries(socialIconMap)) {
+    if (key.includes(keyword)) return icon
+  }
+  return FiLink
+}
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [profile, setProfile] = useState({})
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const prof = await getProfile()
+        setProfile(prof)
+      } catch (error) {
+        console.error("Error fetching profile:", error)
+      }
+    }
+    fetchProfile()
+  }, [])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 4000)
-    setFormData({ name: '', email: '', subject: '', message: '' })
+    setSending(true)
+    try {
+      await addItem('messages', {
+        ...formData,
+        createdAt: new Date().toISOString(),
+        read: false
+      })
+      setSubmitted(true)
+      setTimeout(() => setSubmitted(false), 4000)
+      setFormData({ name: '', email: '', subject: '', message: '' })
+    } catch (error) {
+      console.error("Error sending message:", error)
+      Swal.fire({
+        title: 'Error!',
+        text: 'Failed to send message. Please try again.',
+        icon: 'error',
+        confirmButtonColor: '#8b5cf6'
+      })
+    } finally {
+      setSending(false)
+    }
   }
+
+  const contactInfo = [
+    { icon: FiMail, label: 'Email', value: profile.contactEmail || 'shaffanadia.alfia@university.ac.id', href: profile.contactEmail ? `mailto:${profile.contactEmail}` : null },
+    { icon: FiPhone, label: 'Phone', value: profile.contactPhone || '+62 812 XXXX XXXX', href: profile.contactPhone ? `tel:${profile.contactPhone.replace(/\s/g, '')}` : null },
+    { icon: FiMapPin, label: 'Location', value: profile.contactLocation || 'Indonesia', href: null },
+  ]
+
+  const socials = Array.isArray(profile.socialLinks) ? profile.socialLinks.filter(s => s.url) : []
 
   return (
     <>
@@ -50,11 +115,7 @@ export default function Contact() {
               </p>
 
               <div className="space-y-5 mb-10">
-                {[
-                  { icon: FiMail, label: 'Email', value: 'shaffanadia.alfia@university.ac.id', href: 'mailto:shaffanadia.alfia@university.ac.id' },
-                  { icon: FiPhone, label: 'Phone', value: '+62 812 XXXX XXXX', href: 'tel:+62812XXXXXXXX' },
-                  { icon: FiMapPin, label: 'Location', value: 'Indonesia', href: null },
-                ].map(({ icon: Icon, label, value, href }) => (
+                {contactInfo.map(({ icon: Icon, label, value, href }) => (
                   <div key={label} className="flex items-start gap-4 group">
                     <div className="w-11 h-11 rounded-xl bg-lavender-50 flex items-center justify-center shrink-0 group-hover:bg-lavender-100 transition-colors">
                       <Icon size={18} className="text-lavender-500" />
@@ -74,27 +135,31 @@ export default function Contact() {
               </div>
 
               {/* Social */}
-              <div>
-                <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
-                  Follow Me
-                </p>
-                <div className="flex gap-3">
-                  {[
-                    { icon: FiGithub, href: '#', label: 'GitHub' },
-                    { icon: FiLinkedin, href: '#', label: 'LinkedIn' },
-                    { icon: FiTwitter, href: '#', label: 'Twitter' },
-                  ].map(({ icon: Icon, href, label }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      aria-label={label}
-                      className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-white hover:bg-lavender-500 hover:border-lavender-500 transition-all duration-300 hover:-translate-y-0.5 no-underline"
-                    >
-                      <Icon size={16} />
-                    </a>
-                  ))}
+              {socials.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+                    Follow Me
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    {socials.map((social, idx) => {
+                      const Icon = getSocialIcon(social.name)
+                      return (
+                        <a
+                          key={idx}
+                          href={social.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={social.name}
+                          className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-white hover:bg-lavender-500 hover:border-lavender-500 transition-all duration-300 hover:-translate-y-0.5 no-underline"
+                          title={social.name}
+                        >
+                          <Icon size={16} />
+                        </a>
+                      )
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Decorative Card */}
               <div className="mt-10 p-6 rounded-2xl bg-gradient-to-br from-lavender-50 to-teal-50 border border-lavender-100/50">
@@ -130,7 +195,7 @@ export default function Contact() {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        placeholder="Your name"
+                        placeholder="Nama Anda"
                         required
                         className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all font-sans"
                       />
@@ -144,7 +209,7 @@ export default function Contact() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="your@email.com"
+                        placeholder="email@anda.com"
                         required
                         className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all font-sans"
                       />
@@ -160,7 +225,7 @@ export default function Contact() {
                       name="subject"
                       value={formData.subject}
                       onChange={handleChange}
-                      placeholder="What is this about?"
+                      placeholder="Tentang apa pesan ini?"
                       required
                       className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all font-sans"
                     />
@@ -174,7 +239,7 @@ export default function Contact() {
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
-                      placeholder="Write your message here..."
+                      placeholder="Tulis pesan Anda di sini..."
                       rows={5}
                       required
                       className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all resize-none font-sans"
@@ -183,10 +248,15 @@ export default function Contact() {
 
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm border-none cursor-pointer shadow-lg shadow-lavender-200 hover:shadow-xl hover:shadow-lavender-300 hover:-translate-y-0.5 transition-all duration-300"
+                    disabled={sending}
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm border-none cursor-pointer shadow-lg shadow-lavender-200 hover:shadow-xl hover:shadow-lavender-300 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    <FiSend size={16} />
-                    Send Message
+                    {sending ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <FiSend size={16} />
+                    )}
+                    {sending ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
               </div>

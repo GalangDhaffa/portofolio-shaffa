@@ -10,10 +10,24 @@ export default function About() {
   const [values, setValues] = useState([])
 
   useEffect(() => {
-    setSkills(getItems('skills'))
-    setEducations(getItems('educations'))
-    setValues(getItems('values'))
-    setProfile(getProfile())
+    const fetchData = async () => {
+      try {
+        const [skl, edu, val, prof] = await Promise.all([
+          getItems('skills'),
+          getItems('educations'),
+          getItems('values'),
+          getProfile()
+        ])
+        setSkills(skl)
+        const sortByNewest = (arr) => [...arr].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+        setEducations(sortByNewest(edu))
+        setValues(sortByNewest(val))
+        setProfile(prof)
+      } catch (error) {
+        console.error("Error fetching about data:", error)
+      }
+    }
+    fetchData()
   }, [])
 
   return (

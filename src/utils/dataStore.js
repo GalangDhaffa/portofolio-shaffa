@@ -1,7 +1,9 @@
+import { db } from './firebase'
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc, increment } from 'firebase/firestore'
+
 export const initialData = {
   projects: [
     {
-      id: 1,
       title: 'ASEAN Youth Forum Policy Report',
       category: 'Research',
       description: 'Comprehensive policy report analyzing youth engagement frameworks across ASEAN member states, with recommendations for inclusive policymaking.',
@@ -12,7 +14,6 @@ export const initialData = {
       repoUrl: null,
     },
     {
-      id: 2,
       title: 'Climate Diplomacy in Southeast Asia',
       category: 'Research',
       description: 'Research paper exploring Indonesia\'s role in multilateral climate negotiations and the prospects for green diplomacy in the region.',
@@ -23,7 +24,6 @@ export const initialData = {
       repoUrl: null,
     },
     {
-      id: 3,
       title: 'Digital Diplomacy Seminar Platform',
       category: 'Project',
       description: 'Full event management and digital platform for the international seminar on "Digital Diplomacy in the Post-Pandemic Era" with 500+ attendees.',
@@ -34,7 +34,6 @@ export const initialData = {
       repoUrl: '#',
     },
     {
-      id: 4,
       title: 'Community Empowerment Initiative',
       category: 'Community',
       description: 'Student-led program connecting rural communities with international development resources, focusing on education and skill development.',
@@ -46,16 +45,15 @@ export const initialData = {
     },
   ],
   skills: [
-    { id: 1, name: 'Diplomatic Negotiation', level: 90 },
-    { id: 2, name: 'Policy Analysis', level: 85 },
-    { id: 3, name: 'Research & Writing', level: 92 },
-    { id: 4, name: 'Public Speaking', level: 88 },
-    { id: 5, name: 'Data Analysis', level: 75 },
-    { id: 6, name: 'Project Management', level: 82 },
+    { name: 'Diplomatic Negotiation', level: 90 },
+    { name: 'Policy Analysis', level: 85 },
+    { name: 'Research & Writing', level: 92 },
+    { name: 'Public Speaking', level: 88 },
+    { name: 'Data Analysis', level: 75 },
+    { name: 'Project Management', level: 82 },
   ],
   experiences: [
     {
-      id: 1,
       title: 'Head of External Affairs',
       org: 'FISIP Student Executive Board (BEM)',
       period: '2024 – Present',
@@ -69,7 +67,6 @@ export const initialData = {
       ],
     },
     {
-      id: 2,
       title: 'Director of International Seminar',
       org: 'IR Student Association (HIMAHI)',
       period: '2023 – 2024',
@@ -83,7 +80,6 @@ export const initialData = {
       ],
     },
     {
-      id: 3,
       title: 'Research Assistant',
       org: 'Center for International Studies',
       period: '2023 – 2024',
@@ -97,89 +93,103 @@ export const initialData = {
     }
   ],
   educations: [
-    { id: 1, year: '2023 – Present', title: 'International Relations Student', org: 'FISIP – Faculty of Social & Political Sciences', desc: 'Pursuing a Bachelor\'s degree in International Relations with a focus on Southeast Asian politics and multilateral diplomacy.' },
-    { id: 2, year: '2022 – 2023', title: 'Student Exchange Program', org: 'Partner University', desc: 'Participated in a cultural and academic exchange program, studying comparative politics and global governance.' },
-    { id: 3, year: '2021 – 2022', title: 'High School Diploma', org: 'Senior High School', desc: 'Graduated with honors in Social Sciences, active in debate club and Model United Nations.' },
+    { year: '2023 – Present', title: 'International Relations Student', org: 'FISIP – Faculty of Social & Political Sciences', desc: 'Pursuing a Bachelor\'s degree in International Relations with a focus on Southeast Asian politics and multilateral diplomacy.' },
+    { year: '2022 – 2023', title: 'Student Exchange Program', org: 'Partner University', desc: 'Participated in a cultural and academic exchange program, studying comparative politics and global governance.' },
+    { year: '2021 – 2022', title: 'High School Diploma', org: 'Senior High School', desc: 'Graduated with honors in Social Sciences, active in debate club and Model United Nations.' },
   ],
   values: [
-    { id: 1, title: 'Global Perspective', desc: 'Understanding diverse cultures and international systems to foster cooperation.', icon: '🌏', color: 'lavender' },
-    { id: 2, title: 'Collaboration', desc: 'Building bridges between communities, organizations, and nations.', icon: '🤝', color: 'teal' },
-    { id: 3, title: 'Empathy', desc: 'Leading with compassion and cultural sensitivity in every interaction.', icon: '💖', color: 'blush' },
-    { id: 4, title: 'Impact-Driven', desc: 'Focusing on meaningful outcomes that create lasting positive change.', icon: '🎯', color: 'gold' },
+    { title: 'Global Perspective', desc: 'Understanding diverse cultures and international systems to foster cooperation.', icon: '🌏', color: 'lavender' },
+    { title: 'Collaboration', desc: 'Building bridges between communities, organizations, and nations.', icon: '🤝', color: 'teal' },
+    { title: 'Empathy', desc: 'Leading with compassion and cultural sensitivity in every interaction.', icon: '💖', color: 'blush' },
+    { title: 'Impact-Driven', desc: 'Focusing on meaningful outcomes that create lasting positive change.', icon: '🎯', color: 'gold' },
   ],
   profile: {
     homePhotoUrl: '',
     aboutPhotoUrl: '',
     academicJourney: 'As an International Relations student, I combine academic rigor with hands-on organizational experience to understand and contribute to global discourse.',
+    homeGreeting: "Hi, I'm",
+    homeNameHighlight: "Shaffanadia",
+    homeNameSub: "Alfia Zahwah",
+    homeDescription: "International Relations student at FISIP, passionate about diplomacy, global affairs, and creating meaningful impact through research and community engagement.",
+    cvLink: "",
+    contactEmail: "shaffanadia.alfia@university.ac.id",
+    contactPhone: "+62 812 XXXX XXXX",
+    contactLocation: "Indonesia",
+    socialLinks: []
   }
 }
 
-export const initializeDB = () => {
-  if (!localStorage.getItem('shaffa_projects')) {
-    localStorage.setItem('shaffa_projects', JSON.stringify(initialData.projects))
-  }
-  if (!localStorage.getItem('shaffa_skills')) {
-    localStorage.setItem('shaffa_skills', JSON.stringify(initialData.skills))
-  }
-  if (!localStorage.getItem('shaffa_experiences')) {
-    localStorage.setItem('shaffa_experiences', JSON.stringify(initialData.experiences))
-  }
-  if (!localStorage.getItem('shaffa_educations')) {
-    localStorage.setItem('shaffa_educations', JSON.stringify(initialData.educations))
-  }
-  if (!localStorage.getItem('shaffa_values')) {
-    localStorage.setItem('shaffa_values', JSON.stringify(initialData.values))
-  }
-  if (!localStorage.getItem('shaffa_profile')) {
-    localStorage.setItem('shaffa_profile', JSON.stringify(initialData.profile))
+export const initializeDB = async () => {
+  // Check if profile exists, if not, we assume DB is empty and populate it
+  const profileRef = doc(db, 'metadata', 'profile')
+  const profileSnap = await getDoc(profileRef)
+  
+  if (!profileSnap.exists()) {
+    console.log("Initializing database with dummy data...")
+    await setDoc(profileRef, initialData.profile)
+    
+    const collectionsToInit = ['projects', 'skills', 'experiences', 'educations', 'values']
+    for (const collName of collectionsToInit) {
+      const collRef = collection(db, collName)
+      for (const item of initialData[collName]) {
+        await addDoc(collRef, item)
+      }
+    }
+    
+    const statsRef = doc(db, 'metadata', 'stats')
+    await setDoc(statsRef, { views_count: 0 })
+    console.log("Database initialized successfully!")
   }
   
-  incrementViews()
+  await incrementViews()
 }
 
-export const getProfile = () => {
-  const profile = localStorage.getItem('shaffa_profile')
-  return profile ? JSON.parse(profile) : initialData.profile
+export const getProfile = async () => {
+  const profileRef = doc(db, 'metadata', 'profile')
+  const profileSnap = await getDoc(profileRef)
+  if (profileSnap.exists()) {
+    return profileSnap.data()
+  }
+  return initialData.profile
 }
 
-export const updateProfile = (updatedProfile) => {
-  localStorage.setItem('shaffa_profile', JSON.stringify(updatedProfile))
+export const updateProfile = async (updatedProfile) => {
+  const profileRef = doc(db, 'metadata', 'profile')
+  await setDoc(profileRef, updatedProfile, { merge: true })
 }
 
-export const getViews = () => {
-  const views = localStorage.getItem('shaffa_views_count')
-  return views ? parseInt(views, 10) : 0
+export const getViews = async () => {
+  const statsRef = doc(db, 'metadata', 'stats')
+  const statsSnap = await getDoc(statsRef)
+  if (statsSnap.exists()) {
+    return statsSnap.data().views_count || 0
+  }
+  return 0
 }
 
-export const incrementViews = () => {
-  const views = getViews()
-  localStorage.setItem('shaffa_views_count', views + 1)
+export const incrementViews = async () => {
+  const statsRef = doc(db, 'metadata', 'stats')
+  await setDoc(statsRef, { views_count: increment(1) }, { merge: true })
 }
 
-export const getItems = (key) => {
-  const data = localStorage.getItem(`shaffa_${key}`)
-  return data ? JSON.parse(data) : []
+export const getItems = async (collectionName) => {
+  const collRef = collection(db, collectionName)
+  const snapshot = await getDocs(collRef)
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
 }
 
-export const saveItems = (key, items) => {
-  localStorage.setItem(`shaffa_${key}`, JSON.stringify(items))
+export const addItem = async (collectionName, itemData) => {
+  const collRef = collection(db, collectionName)
+  const docRef = await addDoc(collRef, itemData)
+  return { id: docRef.id, ...itemData }
 }
 
-export const addItem = (key, item) => {
-  const items = getItems(key)
-  const newItem = { ...item, id: Date.now() }
-  saveItems(key, [...items, newItem])
-  return newItem
+export const updateItem = async (collectionName, id, updatedData) => {
+  const docRef = doc(db, collectionName, id)
+  await updateDoc(docRef, updatedData)
 }
 
-export const updateItem = (key, id, updatedData) => {
-  const items = getItems(key)
-  const newItems = items.map(item => item.id === id ? { ...item, ...updatedData } : item)
-  saveItems(key, newItems)
-}
-
-export const deleteItem = (key, id) => {
-  const items = getItems(key)
-  const newItems = items.filter(item => item.id !== id)
-  saveItems(key, newItems)
+export const deleteItem = async (collectionName, id) => {
+  const docRef = doc(db, collectionName, id)
+  await deleteDoc(docRef)
 }

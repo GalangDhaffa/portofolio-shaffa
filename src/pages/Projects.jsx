@@ -10,7 +10,15 @@ export default function Projects() {
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
-    setProjects(getItems('projects'))
+    const fetchData = async () => {
+      try {
+        const proj = await getItems('projects')
+        setProjects([...proj].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)))
+      } catch (error) {
+        console.error("Error fetching projects:", error)
+      }
+    }
+    fetchData()
   }, [])
 
   const categories = ['All', ...new Set(projects.map((p) => p.category))]
