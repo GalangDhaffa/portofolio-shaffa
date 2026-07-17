@@ -1,0 +1,265 @@
+import { Link } from 'react-router-dom'
+import { FiArrowRight, FiDownload, FiMapPin, FiBookOpen } from 'react-icons/fi'
+import { HiOutlineSparkles } from 'react-icons/hi'
+
+export default function Home() {
+  return (
+    <>
+      {/* ── Hero Section ── */}
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* Background Decorations */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-lavender-200/30 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-teal-200/20 rounded-full blur-3xl" style={{ animationDelay: '1s', animation: 'float 4s ease-in-out infinite' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blush-100/15 rounded-full blur-3xl" />
+          <div className="absolute top-40 right-1/4 w-3 h-3 bg-gold-300 rounded-full opacity-60 animate-float" />
+          <div className="absolute bottom-40 left-1/4 w-2 h-2 bg-lavender-400 rounded-full opacity-50" style={{ animation: 'float 3.5s ease-in-out infinite' }} />
+        </div>
+
+        <div className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
+          {/* Left: Text */}
+          <div className="animate-fade-in-up">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-lavender-50 border border-lavender-100 text-lavender-600 text-xs font-semibold">
+                <HiOutlineSparkles size={14} />
+                Welcome to my portfolio
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-heading leading-tight mb-6 text-gray-800">
+              Hi, I'm{' '}
+              <span className="bg-gradient-to-r from-lavender-500 via-blush-400 to-teal-500 bg-clip-text text-transparent">
+                Shaffanadia
+              </span>
+              <br />
+              Alfia Zahwah
+            </h1>
+
+            <p className="text-lg text-gray-500 leading-relaxed mb-8 max-w-lg">
+              International Relations student at <strong className="text-teal-700">FISIP</strong>, 
+              passionate about diplomacy, global affairs, and creating meaningful impact through 
+              research and community engagement.
+            </p>
+
+            <div className="flex flex-wrap gap-4 mb-10">
+              <Link
+                to="/projects"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm no-underline shadow-lg shadow-lavender-200 hover:shadow-xl hover:shadow-lavender-300 hover:-translate-y-0.5 transition-all duration-300"
+              >
+                View My Work
+                <FiArrowRight size={16} />
+              </Link>
+              <a
+                href="#"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-lavender-600 font-semibold text-sm no-underline border border-lavender-200 hover:bg-lavender-50 hover:-translate-y-0.5 transition-all duration-300 shadow-sm"
+              >
+                <FiDownload size={16} />
+                Download CV
+              </a>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="flex gap-8">
+              {[
+                { value: '15+', label: 'Projects' },
+                { value: '8+', label: 'Organizations' },
+                { value: '3+', label: 'Research Papers' },
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <p className="text-2xl font-bold font-heading text-lavender-600 m-0">{stat.value}</p>
+                  <p className="text-xs text-gray-400 m-0 mt-0.5">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: Avatar/Visual */}
+          <div className="flex justify-center animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <div className="relative">
+              {/* Decorative Ring */}
+              <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-lavender-200 via-blush-100 to-teal-200 opacity-60 blur-sm" />
+              
+              {/* Avatar Container */}
+              <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-gradient-to-br from-lavender-100 via-cream-50 to-teal-50 border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden">
+                <div className="text-center">
+                  <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-gradient-to-br from-lavender-300 to-teal-300 flex items-center justify-center">
+                    <span className="text-4xl font-heading font-bold text-white">SA</span>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-600 font-heading">Shaffanadia</p>
+                  <p className="text-xs text-gray-400">Alfia Zahwah</p>
+                </div>
+              </div>
+
+              {/* Floating Badges */}
+              <div className="absolute -top-2 -right-2 px-3 py-1.5 rounded-xl bg-white shadow-lg border border-lavender-100 flex items-center gap-1.5 animate-float">
+                <FiMapPin size={12} className="text-blush-400" />
+                <span className="text-xs font-medium text-gray-600">Indonesia</span>
+              </div>
+              <div className="absolute -bottom-2 -left-2 px-3 py-1.5 rounded-xl bg-white shadow-lg border border-teal-100 flex items-center gap-1.5" style={{ animation: 'float 3.5s ease-in-out infinite 0.5s' }}>
+                <FiBookOpen size={12} className="text-teal-500" />
+                <span className="text-xs font-medium text-gray-600">IR Student</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── About Preview ── */}
+      <section className="py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12 animate-fade-in-up">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-teal-50 text-teal-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-teal-100">
+              About Me
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 mb-3">
+              Passionate About Global Impact
+            </h2>
+            <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed">
+              As an International Relations student, I combine academic rigor with hands-on 
+              organizational experience to understand and contribute to global discourse.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+            {[
+              {
+                icon: '🌏',
+                title: 'Diplomacy & Policy',
+                desc: 'Exploring international policy frameworks and diplomatic processes in the Asia-Pacific region.',
+                color: 'lavender',
+              },
+              {
+                icon: '📝',
+                title: 'Academic Research',
+                desc: 'Publishing research on transnational issues, security studies, and regional cooperation.',
+                color: 'teal',
+              },
+              {
+                icon: '🤝',
+                title: 'Community Leadership',
+                desc: 'Leading student organizations and community projects that foster cross-cultural understanding.',
+                color: 'gold',
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className={`p-6 rounded-2xl bg-${item.color}-50/50 border border-${item.color}-100/60 hover:shadow-lg hover:-translate-y-1 transition-all duration-500 animate-fade-in-up cursor-default`}
+              >
+                <span className="text-3xl block mb-4">{item.icon}</span>
+                <h3 className="text-lg font-semibold font-heading text-gray-800 mb-2 m-0">{item.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed m-0">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <Link
+              to="/about"
+              className="inline-flex items-center gap-2 text-lavender-600 font-semibold text-sm no-underline hover:text-lavender-700 hover:gap-3 transition-all duration-300"
+            >
+              Learn more about me
+              <FiArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Featured Projects Preview ── */}
+      <section className="py-20 bg-gradient-to-b from-white to-cream-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12 animate-fade-in-up">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-gold-50 text-gold-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-gold-200">
+              Featured Work
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 mb-3">
+              Projects & Research
+            </h2>
+            <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed">
+              A selection of my most impactful projects and research contributions.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+            {[
+              {
+                title: 'ASEAN Youth Forum Report',
+                desc: 'Comprehensive analysis of youth engagement in ASEAN regional policymaking processes.',
+                tags: ['Policy', 'Research'],
+                color: 'from-lavender-100 to-lavender-50',
+              },
+              {
+                title: 'Climate Diplomacy Research',
+                desc: 'Exploring Indonesia\'s role in multilateral climate negotiations and green diplomacy.',
+                tags: ['Environment', 'Diplomacy'],
+                color: 'from-teal-100 to-teal-50',
+              },
+              {
+                title: 'Community Empowerment Initiative',
+                desc: 'Student-led program connecting local communities with international development resources.',
+                tags: ['Community', 'Leadership'],
+                color: 'from-blush-100 to-cream-50',
+              },
+            ].map((project) => (
+              <div
+                key={project.title}
+                className="group bg-white rounded-2xl overflow-hidden border border-lavender-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 animate-fade-in-up"
+              >
+                <div className={`h-40 bg-gradient-to-br ${project.color} flex items-center justify-center`}>
+                  <div className="w-14 h-14 rounded-2xl bg-white/50 backdrop-blur-sm" />
+                </div>
+                <div className="p-5">
+                  <h3 className="text-base font-semibold text-gray-800 mb-2 m-0 font-heading group-hover:text-lavender-700 transition-colors">
+                    {project.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 leading-relaxed mb-3 m-0">{project.desc}</p>
+                  <div className="flex gap-2">
+                    {project.tags.map((tag) => (
+                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-cream-100 text-[11px] font-medium text-gold-700">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <Link
+              to="/projects"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lavender-500 to-teal-500 text-white font-semibold text-sm no-underline shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+            >
+              View All Projects
+              <FiArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA Section ── */}
+      <section className="py-20 bg-gradient-to-br from-[#7c5cbf] via-[#8b6cc5] to-[#6a5aad] relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-40 h-40 bg-white/8 rounded-full blur-2xl" />
+          <div className="absolute bottom-10 right-10 w-60 h-60 bg-white/5 rounded-full blur-2xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+        </div>
+        <div className="relative max-w-3xl mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold font-heading text-white mb-4">
+            Let's Connect & Collaborate
+          </h2>
+          <p className="text-white/75 text-base mb-8 max-w-xl mx-auto leading-relaxed">
+            Whether it's research collaboration, organizational partnerships, or just a conversation
+            about global affairs — I'd love to hear from you.
+          </p>
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-lavender-600 font-semibold text-sm no-underline shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+          >
+            Get In Touch
+            <FiArrowRight size={16} />
+          </Link>
+        </div>
+      </section>
+    </>
+  )
+}
