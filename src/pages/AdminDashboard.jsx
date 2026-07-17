@@ -261,7 +261,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-6 border-b border-gray-200">
+      <div className="flex gap-4 mb-6 border-b border-gray-200 overflow-x-auto whitespace-nowrap pb-1">
         {['Overview', 'Home', 'About', 'Projects', 'Skills', 'Experience', 'Contact'].map(tab => (
           <button
             key={tab}
@@ -460,7 +460,7 @@ export default function AdminDashboard() {
             </div>
             <div className="space-y-4 mb-10">
               {educations.map(e => (
-                <div key={e.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                <div key={e.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
                   <div>
                     <h3 className="font-semibold text-gray-800 m-0">{e.title}</h3>
                     <p className="text-xs text-gray-500 m-0 mt-1">{e.org} • {e.year}</p>
@@ -481,7 +481,7 @@ export default function AdminDashboard() {
             </div>
             <div className="space-y-4">
               {values.map(v => (
-                <div key={v.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                <div key={v.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="text-2xl">{v.icon}</div>
                     <div>
@@ -511,7 +511,7 @@ export default function AdminDashboard() {
           </div>
           <div className="space-y-4">
             {projects.map(p => (
-              <div key={p.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+              <div key={p.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
                 <div>
                   <h3 className="font-semibold text-gray-800 m-0">{p.title}</h3>
                   <p className="text-xs text-gray-500 m-0 mt-1">{p.category}</p>
@@ -537,7 +537,7 @@ export default function AdminDashboard() {
           </div>
           <div className="space-y-4">
             {skills.map(s => (
-              <div key={s.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+              <div key={s.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
                 <div>
                   <h3 className="font-semibold text-gray-800 m-0">{s.name}</h3>
                   <div className="w-64 sm:w-80 h-2 bg-gray-200 rounded-full mt-2"><div className="h-full bg-lavender-400 rounded-full" style={{ width: `${s.level}%` }}></div></div>
@@ -563,7 +563,7 @@ export default function AdminDashboard() {
           </div>
           <div className="space-y-4">
             {experiences.map(e => (
-              <div key={e.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+              <div key={e.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
                 <div>
                   <h3 className="font-semibold text-gray-800 m-0">{e.title}</h3>
                   <p className="text-xs text-gray-500 m-0 mt-1">{e.org} • {e.period}</p>

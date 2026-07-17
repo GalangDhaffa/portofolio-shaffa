@@ -13,6 +13,8 @@ import {
   HiOutlineMail,
 } from 'react-icons/hi'
 
+import { HiOutlineX } from 'react-icons/hi'
+
 const menuItems = [
   { id: 'Overview', icon: HiOutlineViewGrid, label: 'Overview' },
   { id: 'Home', icon: HiOutlineHome, label: 'Home Page' },
@@ -23,7 +25,7 @@ const menuItems = [
   { id: 'Contact', icon: HiOutlineMail, label: 'Contact & Inbox' },
 ]
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const currentTab = searchParams.get('tab') || 'Overview'
@@ -34,9 +36,9 @@ export default function AdminSidebar() {
   }
 
   return (
-    <aside className="w-64 h-screen bg-gradient-to-b from-[#2d2a32] to-[#1e1b22] text-white flex flex-col shrink-0">
+    <aside className={`fixed inset-y-0 left-0 z-50 w-64 h-screen bg-gradient-to-b from-[#2d2a32] to-[#1e1b22] text-white flex flex-col shrink-0 transform transition-transform duration-300 md:relative md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       {/* Brand */}
-      <div className="px-6 py-6 border-b border-white/10">
+      <div className="px-6 py-6 border-b border-white/10 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-lavender-400 to-teal-400 flex items-center justify-center font-heading font-bold text-lg shadow-lg">
             S
@@ -46,6 +48,12 @@ export default function AdminSidebar() {
             <p className="text-xs text-gray-400 m-0">Shaffanadia</p>
           </div>
         </div>
+        <button 
+          onClick={() => setIsOpen(false)}
+          className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 border-none bg-transparent cursor-pointer"
+        >
+          <HiOutlineX size={20} />
+        </button>
       </div>
 
       {/* Navigation */}
@@ -60,6 +68,7 @@ export default function AdminSidebar() {
               <li key={id}>
                 <Link
                   to={`/admin?tab=${id}`}
+                  onClick={() => setIsOpen && setIsOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium no-underline transition-all duration-200 ${isActive
                     ? 'bg-lavender-500/20 text-lavender-300 shadow-sm'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
