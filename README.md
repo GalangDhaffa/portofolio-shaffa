@@ -42,25 +42,6 @@ Website ini sudah di-_deploy_ dan dapat diakses secara publik. Sebagai pemilik w
 > 📖 **Butuh panduan lengkap?**
 > Silakan baca **[Buku Panduan Penggunaan (GUIDEBOOK.md)](./GUIDEBOOK.md)** yang berisi instruksi lengkap untuk mengelola website ini dari awal sampai akhir!
 
-### 1. Cara Mengakses Admin Dashboard
-1. Buka browser Anda dan kunjungi halaman utama website.
-2. Tambahkan `/login` di akhir URL (contoh: `https://portofolio-shaffa.vercel.app/login`).
-3. Masukkan PIN akses admin Rahasia Anda.
-4. Setelah login sukses, Anda akan langsung dibawa ke halaman `/admin` (Admin Dashboard).
-
-### 2. Cara Mengubah & Memperbarui Konten
-Di dalam Admin Dashboard, terdapat beberapa *tab* di menu sebelah kiri yang bisa Anda pilih:
-
-- **Memperbarui Profil Dasar (Home, About, Contact):** 
-  Masuk ke salah satu tab tersebut, lalu ubah teks yang ada di dalam form. Jangan khawatir bingung, karena setiap kotak pengisian sudah dilengkapi dengan contoh teks berwarna abu-abu (dalam Bahasa Indonesia) untuk memandu Anda! Setelah selesai, jangan lupa klik tombol **Save Settings**.
-- **Menambahkan Data Baru (Projects, Skills, Experience, Education, Values):**
-  1. Klik tab yang ingin ditambahkan (misal: **Projects**).
-  2. Klik tombol **+ Add Project** (atau tombol *add* lainnya).
-  3. Akan muncul *popup* form pengisian. Isi data sesuai petunjuk yang ada.
-  4. Klik **Save**. Data baru akan otomatis ditambahkan ke daftar dan langsung tampil di halaman depan website!
-- **Mengedit / Menghapus Data:** 
-  Pada setiap daftar item (misal di daftar Proyek atau Pengalaman), terdapat tombol berlogo **Pensil** (untuk mengubah data) dan berlogo **Tempat Sampah** merah (untuk menghapus). Klik saja tombol tersebut dan konfirmasi.
-
 Semudah itu! Anda kini memegang kendali penuh atas website portofolio Anda.
 
 ---
