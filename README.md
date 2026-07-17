@@ -35,36 +35,30 @@ Selain itu, web ini dilengkapi dengan sistem keamanan login, dan sebuah Admin Da
 
 ---
 
-## 🚀 Tutorial Cara Penggunaan
+## 🚀 Tutorial Cara Penggunaan Web & CMS
 
-### 1. Menjalankan Website di Komputer Lokal (Localhost)
-Pastikan Anda sudah menginstal **Node.js**.
+Website ini sudah di-_deploy_ dan dapat diakses secara publik. Sebagai pemilik web, Anda bisa mengubah keseluruhan isi konten melalui Admin Dashboard tanpa perlu mengerti bahasa pemrograman.
 
-1. Buka terminal (Command Prompt / PowerShell / Git Bash).
-2. Arahkan ke folder proyek ini.
-3. Instal semua dependensi dengan menjalankan perintah:
-   ```bash
-   npm install
-   ```
-4. Jalankan *development server*:
-   ```bash
-   npm run dev
-   ```
-5. Buka browser dan akses tautan yang muncul (biasanya `http://localhost:5173`).
+### 1. Cara Mengakses Admin Dashboard
+1. Buka browser Anda dan kunjungi halaman utama website.
+2. Tambahkan `/login` di akhir URL (contoh: `https://portofolio-shaffa.vercel.app/login`).
+3. Masukkan PIN akses admin Rahasia Anda.
+4. Setelah login sukses, Anda akan langsung dibawa ke halaman `/admin` (Admin Dashboard).
 
-### 2. Cara Mengakses Admin Dashboard
-1. Buka browser dan pergi ke halaman `/login` (misalnya `http://localhost:5173/login`).
-2. Masukkan PIN akses admin (Sesuai dengan kode akses yang telah diatur di dalam sistem).
-3. Setelah berhasil login, Anda akan dialihkan ke `/admin` (Admin Dashboard).
+### 2. Cara Mengubah & Memperbarui Konten
+Di dalam Admin Dashboard, terdapat beberapa *tab* di menu sebelah kiri yang bisa Anda pilih:
 
-### 3. Cara Mengubah Konten Website
-1. **Memperbarui Profil Dasar:** Pergi ke tab **Home** atau **About** di Dashboard. Isi form yang tersedia (terdapat teks contoh/petunjuk berbahasa Indonesia untuk memudahkan Anda), lalu klik "Save Settings".
-2. **Menambahkan Data Baru (Proyek, Pengalaman, dll):**
-   - Pergi ke tab yang diinginkan (misal: **Projects**).
-   - Klik tombol **+ Add Project**.
-   - Isi form pada popup modal yang muncul.
-   - Klik **Save** dan data akan langsung tersimpan.
-3. **Mengedit / Menghapus Data:** Di setiap daftar data di dashboard, terdapat ikon **Pensil** (untuk mengedit) dan ikon **Tempat Sampah** (untuk menghapus).
+- **Memperbarui Profil Dasar (Home, About, Contact):** 
+  Masuk ke salah satu tab tersebut, lalu ubah teks yang ada di dalam form. Jangan khawatir bingung, karena setiap kotak pengisian sudah dilengkapi dengan contoh teks berwarna abu-abu (dalam Bahasa Indonesia) untuk memandu Anda! Setelah selesai, jangan lupa klik tombol **Save Settings**.
+- **Menambahkan Data Baru (Projects, Skills, Experience, Education, Values):**
+  1. Klik tab yang ingin ditambahkan (misal: **Projects**).
+  2. Klik tombol **+ Add Project** (atau tombol *add* lainnya).
+  3. Akan muncul *popup* form pengisian. Isi data sesuai petunjuk yang ada.
+  4. Klik **Save**. Data baru akan otomatis ditambahkan ke daftar dan langsung tampil di halaman depan website!
+- **Mengedit / Menghapus Data:** 
+  Pada setiap daftar item (misal di daftar Proyek atau Pengalaman), terdapat tombol berlogo **Pensil** (untuk mengubah data) dan berlogo **Tempat Sampah** merah (untuk menghapus). Klik saja tombol tersebut dan konfirmasi.
+
+Semudah itu! Anda kini memegang kendali penuh atas website portofolio Anda.
 
 ---
 
