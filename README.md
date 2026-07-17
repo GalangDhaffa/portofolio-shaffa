@@ -39,6 +39,9 @@ Selain itu, web ini dilengkapi dengan sistem keamanan login, dan sebuah Admin Da
 
 Website ini sudah di-_deploy_ dan dapat diakses secara publik. Sebagai pemilik web, Anda bisa mengubah keseluruhan isi konten melalui Admin Dashboard tanpa perlu mengerti bahasa pemrograman.
 
+> 📖 **Butuh panduan lengkap?**
+> Silakan baca **[Buku Panduan Penggunaan (GUIDEBOOK.md)](./GUIDEBOOK.md)** yang berisi instruksi lengkap untuk mengelola website ini dari awal sampai akhir!
+
 ### 1. Cara Mengakses Admin Dashboard
 1. Buka browser Anda dan kunjungi halaman utama website.
 2. Tambahkan `/login` di akhir URL (contoh: `https://portofolio-shaffa.vercel.app/login`).
