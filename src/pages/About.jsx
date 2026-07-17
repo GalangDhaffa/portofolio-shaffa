@@ -1,29 +1,21 @@
+import { useState, useEffect } from 'react'
 import SectionHeading from '../components/SectionHeading'
-import { FiAward, FiBookOpen, FiGlobe, FiHeart, FiUsers, FiTarget } from 'react-icons/fi'
-
-const skills = [
-  { name: 'Diplomatic Negotiation', level: 90 },
-  { name: 'Policy Analysis', level: 85 },
-  { name: 'Research & Writing', level: 92 },
-  { name: 'Public Speaking', level: 88 },
-  { name: 'Data Analysis', level: 75 },
-  { name: 'Project Management', level: 82 },
-]
-
-const timeline = [
-  { year: '2023 – Present', title: 'International Relations Student', org: 'FISIP – Faculty of Social & Political Sciences', desc: 'Pursuing a Bachelor\'s degree in International Relations with a focus on Southeast Asian politics and multilateral diplomacy.' },
-  { year: '2022 – 2023', title: 'Student Exchange Program', org: 'Partner University', desc: 'Participated in a cultural and academic exchange program, studying comparative politics and global governance.' },
-  { year: '2021 – 2022', title: 'High School Diploma', org: 'Senior High School', desc: 'Graduated with honors in Social Sciences, active in debate club and Model United Nations.' },
-]
-
-const values = [
-  { icon: FiGlobe, title: 'Global Perspective', desc: 'Understanding diverse cultures and international systems to foster cooperation.', color: 'lavender' },
-  { icon: FiUsers, title: 'Collaboration', desc: 'Building bridges between communities, organizations, and nations.', color: 'teal' },
-  { icon: FiHeart, title: 'Empathy', desc: 'Leading with compassion and cultural sensitivity in every interaction.', color: 'blush' },
-  { icon: FiTarget, title: 'Impact-Driven', desc: 'Focusing on meaningful outcomes that create lasting positive change.', color: 'gold' },
-]
+import { FiAward, FiBookOpen, FiGlobe } from 'react-icons/fi'
+import { getItems, getProfile } from '../utils/dataStore'
 
 export default function About() {
+  const [skills, setSkills] = useState([])
+  const [profile, setProfile] = useState({})
+  const [educations, setEducations] = useState([])
+  const [values, setValues] = useState([])
+
+  useEffect(() => {
+    setSkills(getItems('skills'))
+    setEducations(getItems('educations'))
+    setValues(getItems('values'))
+    setProfile(getProfile())
+  }, [])
+
   return (
     <>
       {/* ── Hero Banner ── */}
@@ -37,13 +29,17 @@ export default function About() {
             <div className="flex justify-center animate-fade-in-up">
               <div className="relative">
                 <div className="w-64 h-72 rounded-3xl bg-gradient-to-br from-lavender-200 via-blush-100 to-teal-100 shadow-xl overflow-hidden border-4 border-white flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-lavender-400 to-teal-400 flex items-center justify-center">
-                      <span className="text-3xl font-heading font-bold text-white">SA</span>
+                  {profile.aboutPhotoUrl ? (
+                    <img src={profile.aboutPhotoUrl} alt="Shaffanadia" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-center">
+                      <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-lavender-400 to-teal-400 flex items-center justify-center">
+                        <span className="text-3xl font-heading font-bold text-white">SA</span>
+                      </div>
+                      <p className="text-sm font-semibold text-gray-600 font-heading">Shaffanadia</p>
+                      <p className="text-xs text-gray-400">Alfia Zahwah</p>
                     </div>
-                    <p className="text-sm font-semibold text-gray-600 font-heading">Shaffanadia</p>
-                    <p className="text-xs text-gray-400">Alfia Zahwah</p>
-                  </div>
+                  )}
                 </div>
                 <div className="absolute -bottom-3 -right-3 px-4 py-2 rounded-xl bg-white shadow-lg border border-gold-100">
                   <div className="flex items-center gap-2">
@@ -67,10 +63,8 @@ export default function About() {
                 a deep passion for understanding the complexities of global politics, diplomacy, and 
                 cross-cultural communication.
               </p>
-              <p className="text-gray-500 leading-relaxed mb-6">
-                My academic journey is complemented by active involvement in student organizations, 
-                research projects, and community initiatives. I believe in the power of youth engagement 
-                to shape a more just and interconnected world.
+              <p className="text-gray-500 leading-relaxed mb-6 whitespace-pre-line">
+                {profile.academicJourney}
               </p>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -95,14 +89,14 @@ export default function About() {
             title="What Drives Me"
             description="Core principles that guide my academic pursuits and professional aspirations."
           />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 stagger-children">
-            {values.map(({ icon: Icon, title, desc, color }) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+            {values.map(({ icon, title, desc, color }, idx) => (
               <div
-                key={title}
+                key={idx}
                 className="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 text-center animate-fade-in-up group"
               >
-                <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl bg-${color}-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon size={24} className={`text-${color}-500`} />
+                <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl bg-${color || 'lavender'}-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  <span className="text-2xl">{icon}</span>
                 </div>
                 <h3 className="text-base font-semibold font-heading text-gray-800 mb-2 m-0">{title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed m-0">{desc}</p>
@@ -152,8 +146,8 @@ export default function About() {
             <div className="absolute left-[18px] md:left-1/2 md:-translate-x-px top-0 bottom-0 w-0.5 bg-gradient-to-b from-lavender-300 via-teal-300 to-gold-300" />
             
             <div className="space-y-8">
-              {timeline.map((item, i) => (
-                <div key={i} className={`relative flex items-start gap-6 ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
+              {educations.map((item, i) => (
+                <div key={item.id} className={`relative flex items-start gap-6 ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
                   {/* Dot */}
                   <div className="absolute left-[14px] md:left-1/2 md:-translate-x-1/2 w-2.5 h-2.5 bg-lavender-400 rounded-full border-4 border-cream-50 shadow-sm z-10 mt-2" />
                   

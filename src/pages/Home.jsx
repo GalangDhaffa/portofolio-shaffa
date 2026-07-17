@@ -1,8 +1,27 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FiArrowRight, FiDownload, FiMapPin, FiBookOpen } from 'react-icons/fi'
 import { HiOutlineSparkles } from 'react-icons/hi'
+import { getItems, getProfile } from '../utils/dataStore'
+import SectionHeading from '../components/SectionHeading'
 
 export default function Home() {
+  const [projects, setProjects] = useState([])
+  const [experiences, setExperiences] = useState([])
+  const [skills, setSkills] = useState([])
+  const [profile, setProfile] = useState({})
+
+  useEffect(() => {
+    setProjects(getItems('projects'))
+    setExperiences(getItems('experiences'))
+    setSkills(getItems('skills'))
+    setProfile(getProfile())
+  }, [])
+
+  const projectsCount = projects.length
+  const skillsCount = skills.length
+  const orgCount = experiences.length
+
   return (
     <>
       {/* ── Hero Section ── */}
@@ -36,8 +55,8 @@ export default function Home() {
             </h1>
 
             <p className="text-lg text-gray-500 leading-relaxed mb-8 max-w-lg">
-              International Relations student at <strong className="text-teal-700">FISIP</strong>, 
-              passionate about diplomacy, global affairs, and creating meaningful impact through 
+              International Relations student at <strong className="text-teal-700">FISIP</strong>,
+              passionate about diplomacy, global affairs, and creating meaningful impact through
               research and community engagement.
             </p>
 
@@ -61,9 +80,9 @@ export default function Home() {
             {/* Quick Stats */}
             <div className="flex gap-8">
               {[
-                { value: '15+', label: 'Projects' },
-                { value: '8+', label: 'Organizations' },
-                { value: '3+', label: 'Research Papers' },
+                { value: projectsCount > 0 ? `${projectsCount}+` : projectsCount, label: 'Projects' },
+                { value: orgCount > 0 ? `${orgCount}+` : orgCount, label: 'Experience' },
+                { value: skillsCount > 0 ? `${skillsCount}+` : skillsCount, label: 'Skills' },
               ].map((stat) => (
                 <div key={stat.label} className="text-center">
                   <p className="text-2xl font-bold font-heading text-lavender-600 m-0">{stat.value}</p>
@@ -78,16 +97,20 @@ export default function Home() {
             <div className="relative">
               {/* Decorative Ring */}
               <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-lavender-200 via-blush-100 to-teal-200 opacity-60 blur-sm" />
-              
+
               {/* Avatar Container */}
               <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-gradient-to-br from-lavender-100 via-cream-50 to-teal-50 border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden">
-                <div className="text-center">
-                  <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-gradient-to-br from-lavender-300 to-teal-300 flex items-center justify-center">
-                    <span className="text-4xl font-heading font-bold text-white">SA</span>
+                {profile.homePhotoUrl ? (
+                  <img src={profile.homePhotoUrl} alt="Shaffanadia" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="text-center">
+                    <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-gradient-to-br from-lavender-300 to-teal-300 flex items-center justify-center">
+                      <span className="text-4xl font-heading font-bold text-white">SA</span>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-600 font-heading">Shaffanadia</p>
+                    <p className="text-xs text-gray-400">Alfia Zahwah</p>
                   </div>
-                  <p className="text-sm font-semibold text-gray-600 font-heading">Shaffanadia</p>
-                  <p className="text-xs text-gray-400">Alfia Zahwah</p>
-                </div>
+                )}
               </div>
 
               {/* Floating Badges */}
@@ -114,9 +137,8 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 mb-3">
               Passionate About Global Impact
             </h2>
-            <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed">
-              As an International Relations student, I combine academic rigor with hands-on 
-              organizational experience to understand and contribute to global discourse.
+            <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed whitespace-pre-line">
+              {profile.academicJourney || 'Welcome to my portfolio!'}
             </p>
           </div>
 
@@ -143,7 +165,7 @@ export default function Home() {
             ].map((item) => (
               <div
                 key={item.title}
-                className={`p-6 rounded-2xl bg-${item.color}-50/50 border border-${item.color}-100/60 hover:shadow-lg hover:-translate-y-1 transition-all duration-500 animate-fade-in-up cursor-default`}
+                className={`p-6 rounded-2xl bg-white shadow-md hover:shadow-xl hover:shadow-${item.color}-200/50 hover:-translate-y-1 transition-all duration-500 animate-fade-in-up cursor-default`}
               >
                 <span className="text-3xl block mb-4">{item.icon}</span>
                 <h3 className="text-lg font-semibold font-heading text-gray-800 mb-2 m-0">{item.title}</h3>
@@ -227,7 +249,7 @@ export default function Home() {
           <div className="text-center mt-10">
             <Link
               to="/projects"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lavender-500 to-teal-500 text-white font-semibold text-sm no-underline shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+              className="inline-flex items-center gap-2 text-lavender-600 font-semibold text-sm no-underline hover:text-lavender-700 hover:gap-3 transition-all duration-300"
             >
               View All Projects
               <FiArrowRight size={16} />
@@ -237,27 +259,28 @@ export default function Home() {
       </section>
 
       {/* ── CTA Section ── */}
-      <section className="py-20 bg-gradient-to-br from-[#7c5cbf] via-[#8b6cc5] to-[#6a5aad] relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-lavender-500 via-lavender-600 to-teal-600 relative overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-40 h-40 bg-white/8 rounded-full blur-2xl" />
-          <div className="absolute bottom-10 right-10 w-60 h-60 bg-white/5 rounded-full blur-2xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute top-10 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+          <div className="absolute bottom-10 right-10 w-60 h-60 bg-teal-400/10 rounded-full blur-2xl" />
         </div>
-        <div className="relative max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold font-heading text-white mb-4">
-            Let's Connect & Collaborate
-          </h2>
-          <p className="text-white/75 text-base mb-8 max-w-xl mx-auto leading-relaxed">
-            Whether it's research collaboration, organizational partnerships, or just a conversation
-            about global affairs — I'd love to hear from you.
-          </p>
-          <Link
-            to="/contact"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-lavender-600 font-semibold text-sm no-underline shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
-          >
-            Get In Touch
-            <FiArrowRight size={16} />
-          </Link>
+        <div className="relative max-w-3xl mx-auto px-6">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 md:p-14 text-center shadow-2xl">
+            <h2 className="text-3xl md:text-4xl font-bold font-heading !text-white mb-4">
+              Let's Connect & Collaborate
+            </h2>
+            <p className="text-white text-base mb-8 max-w-xl mx-auto leading-relaxed">
+              Whether it's research collaboration, organizational partnerships, or just a conversation
+              about global affairs — I'd love to hear from you.
+            </p>
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-lavender-600 font-semibold text-sm no-underline shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+            >
+              Get In Touch
+              <FiArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
     </>

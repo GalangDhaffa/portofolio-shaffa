@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   HiOutlineEye,
   HiOutlineDocumentText,
@@ -5,155 +7,462 @@ import {
   HiOutlineTrendingUp,
   HiOutlineClock,
   HiOutlineDotsVertical,
+  HiOutlineBriefcase,
+  HiOutlineUser,
+  HiPlus,
+  HiPencil,
+  HiTrash,
+  HiX
 } from 'react-icons/hi'
-
-const stats = [
-  { label: 'Total Views', value: '12,847', change: '+14.2%', icon: HiOutlineEye, color: 'lavender' },
-  { label: 'Pages', value: '6', change: '0%', icon: HiOutlineDocumentText, color: 'teal' },
-  { label: 'Messages', value: '24', change: '+8.5%', icon: HiOutlineChatAlt2, color: 'blush' },
-  { label: 'Bounce Rate', value: '32%', change: '-3.1%', icon: HiOutlineTrendingUp, color: 'gold' },
-]
-
-const recentMessages = [
-  { name: 'Dr. Sarah Mitchell', email: 'sarah.m@university.edu', subject: 'Research Collaboration Inquiry', time: '2 hours ago', read: false },
-  { name: 'Ahmad Fauzi', email: 'ahmad.f@gmail.com', subject: 'MUN Conference Invitation', time: '5 hours ago', read: false },
-  { name: 'Lisa Chen', email: 'lisa.chen@asean.org', subject: 'Youth Forum Follow-up', time: '1 day ago', read: true },
-  { name: 'Prof. Widodo', email: 'widodo@fisip.ac.id', subject: 'Thesis Proposal Review', time: '2 days ago', read: true },
-]
-
-const recentActivity = [
-  { action: 'Updated', target: 'About Me page', time: '30 min ago', color: 'bg-lavender-400' },
-  { action: 'Published', target: 'ASEAN Research Paper', time: '2 hours ago', color: 'bg-teal-400' },
-  { action: 'Received', target: 'New contact message', time: '5 hours ago', color: 'bg-blush-400' },
-  { action: 'Added', target: 'Climate Diplomacy project', time: '1 day ago', color: 'bg-gold-400' },
-  { action: 'Updated', target: 'Experience section', time: '2 days ago', color: 'bg-lavender-400' },
-]
+import { getItems, addItem, updateItem, deleteItem, getViews, getProfile, updateProfile } from '../utils/dataStore'
 
 export default function AdminDashboard() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeTab = searchParams.get('tab') || 'Overview'
+
+  const [projects, setProjects] = useState([])
+  const [skills, setSkills] = useState([])
+  const [experiences, setExperiences] = useState([])
+  const [educations, setEducations] = useState([])
+  const [values, setValues] = useState([])
+  const [profile, setProfile] = useState({})
+  const [views, setViews] = useState(0)
+  const [profileForm, setProfileForm] = useState({})
+  
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalType, setModalType] = useState('') // 'Project', 'Skill', 'Experience'
+  const [editingItem, setEditingItem] = useState(null)
+  
+  // Form States
+  const [formData, setFormData] = useState({})
+
+  const dynamicStats = [
+    { label: 'Total Projects', value: projects.length, icon: HiOutlineBriefcase, color: 'lavender' },
+    { label: 'Total Skills', value: skills.length, icon: HiOutlineDocumentText, color: 'teal' },
+    { label: 'Experiences', value: experiences.length, icon: HiOutlineUser, color: 'gold' },
+    { label: 'Total Views', value: views.toLocaleString(), icon: HiOutlineEye, color: 'blush' },
+  ]
+
+  useEffect(() => {
+    refreshData()
+  }, [])
+
+  const refreshData = () => {
+    setProjects(getItems('projects'))
+    setSkills(getItems('skills'))
+    setExperiences(getItems('experiences'))
+    setEducations(getItems('educations'))
+    setValues(getItems('values'))
+    setViews(getViews())
+    
+    const prof = getProfile()
+    setProfile(prof)
+    setProfileForm(prof)
+  }
+
+  const handleProfileSave = (e) => {
+    e.preventDefault()
+    updateProfile(profileForm)
+    refreshData()
+    alert('Profile saved successfully!')
+  }
+
+  const openModal = (type, item = null) => {
+    setModalType(type)
+    setEditingItem(item)
+    if (item) {
+      setFormData(item)
+    } else {
+      if (type === 'Project') setFormData({ title: '', category: 'Project', description: '', tags: '' })
+      if (type === 'Skill') setFormData({ name: '', level: 50 })
+      if (type === 'Experience') setFormData({ title: '', org: '', period: '', location: '', type: 'Leadership', desc: '', achievements: '' })
+      if (type === 'Education') setFormData({ year: '', title: '', org: '', desc: '' })
+      if (type === 'Value') setFormData({ title: '', desc: '', icon: '', color: 'lavender' })
+    }
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setEditingItem(null)
+    setFormData({})
+  }
+
+  const handleSave = (e) => {
+    e.preventDefault()
+    let key = modalType.toLowerCase() + 's'
+    if (modalType === 'Experience') key = 'experiences'
+    if (modalType === 'Education') key = 'educations'
+    if (modalType === 'Value') key = 'values'
+
+    let finalData = { ...formData }
+    if (modalType === 'Project' && typeof finalData.tags === 'string') {
+      finalData.tags = finalData.tags.split(',').map(t => t.trim()).filter(Boolean)
+    }
+    if (modalType === 'Experience' && typeof finalData.achievements === 'string') {
+      finalData.achievements = finalData.achievements.split('\n').map(t => t.trim()).filter(Boolean)
+    }
+
+    if (editingItem) {
+      updateItem(key, editingItem.id, finalData)
+    } else {
+      addItem(key, finalData)
+    }
+    refreshData()
+    closeModal()
+  }
+
+  const handleDelete = (type, id) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      let key = type.toLowerCase() + 's'
+      if (type === 'Experience') key = 'experiences'
+      if (type === 'Education') key = 'educations'
+      if (type === 'Value') key = 'values'
+      deleteItem(key, id)
+      refreshData()
+    }
+  }
+
   return (
     <div className="animate-fade-in">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold font-heading text-gray-800 m-0">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1 m-0">Welcome back, Shaffa. Here's your portfolio overview.</p>
+        <p className="text-sm text-gray-500 mt-1 m-0">Welcome back, Shaffa. Manage your portfolio here.</p>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        {stats.map(({ label, value, change, icon: Icon, color }) => (
-          <div
-            key={label}
-            className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group"
+      {/* Tabs */}
+      <div className="flex gap-4 mb-6 border-b border-gray-200">
+        {['Overview', 'Profile', 'Projects', 'Skills', 'Experience', 'Education', 'Values'].map(tab => (
+          <button
+            key={tab}
+            onClick={() => setSearchParams({ tab })}
+            className={`pb-3 px-2 text-sm font-semibold transition-all border-b-2 bg-transparent cursor-pointer ${
+              activeTab === tab 
+                ? 'border-lavender-500 text-lavender-600' 
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className={`w-11 h-11 rounded-xl bg-${color}-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                <Icon size={20} className={`text-${color}-500`} />
-              </div>
-              <span
-                className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                  change.startsWith('+')
-                    ? 'bg-teal-50 text-teal-600'
-                    : change.startsWith('-')
-                    ? 'bg-blush-50 text-blush-600'
-                    : 'bg-gray-50 text-gray-500'
-                }`}
-              >
-                {change}
-              </span>
-            </div>
-            <p className="text-2xl font-bold text-gray-800 m-0 font-heading">{value}</p>
-            <p className="text-xs text-gray-400 m-0 mt-1">{label}</p>
-          </div>
+            {tab}
+          </button>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Recent Messages */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
-            <h2 className="text-base font-semibold text-gray-800 m-0 font-heading">Recent Messages</h2>
-            <button className="text-xs text-lavender-500 font-semibold bg-transparent border-none cursor-pointer hover:text-lavender-700 transition-colors">
-              View All
+      {/* TAB: OVERVIEW */}
+      {activeTab === 'Overview' && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          {dynamicStats.map(({ label, value, icon: Icon, color }) => (
+            <div key={label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+              <div className="flex items-start justify-between mb-3">
+                <div className={`w-11 h-11 rounded-xl bg-${color}-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon size={20} className={`text-${color}-500`} />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-gray-800 m-0 font-heading">{value}</p>
+              <p className="text-xs text-gray-400 m-0 mt-1">{label}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* TAB: PROFILE */}
+      {activeTab === 'Profile' && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="mb-6 border-b border-gray-100 pb-4">
+            <h2 className="text-lg font-bold font-heading m-0">Profile Settings</h2>
+            <p className="text-sm text-gray-500 m-0 mt-1">Update your photos and About text.</p>
+          </div>
+          
+          <form onSubmit={handleProfileSave} className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-sm font-semibold block mb-2 text-gray-700">Home Photo</label>
+                <input 
+                  type="file"
+                  accept="image/*"
+                  className="w-full p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white transition-colors" 
+                  onChange={e => {
+                    const file = e.target.files[0]
+                    if (file) {
+                      const reader = new FileReader()
+                      reader.onloadend = () => setProfileForm({...profileForm, homePhotoUrl: reader.result})
+                      reader.readAsDataURL(file)
+                    }
+                  }} 
+                />
+                {profileForm.homePhotoUrl && <img src={profileForm.homePhotoUrl} alt="Preview" className="mt-3 h-20 rounded shadow-sm object-cover" />}
+              </div>
+              <div>
+                <label className="text-sm font-semibold block mb-2 text-gray-700">About Photo</label>
+                <input 
+                  type="file"
+                  accept="image/*"
+                  className="w-full p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white transition-colors" 
+                  onChange={e => {
+                    const file = e.target.files[0]
+                    if (file) {
+                      const reader = new FileReader()
+                      reader.onloadend = () => setProfileForm({...profileForm, aboutPhotoUrl: reader.result})
+                      reader.readAsDataURL(file)
+                    }
+                  }} 
+                />
+                {profileForm.aboutPhotoUrl && <img src={profileForm.aboutPhotoUrl} alt="Preview" className="mt-3 h-20 rounded shadow-sm object-cover" />}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold block mb-2 text-gray-700">Academic Journey (About Page)</label>
+              <textarea 
+                className="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white transition-colors" 
+                rows="4" 
+                value={profileForm.academicJourney || ''} 
+                onChange={e => setProfileForm({...profileForm, academicJourney: e.target.value})} 
+              />
+            </div>
+
+            <div className="pt-4 flex justify-end">
+              <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-200 hover:shadow-lg hover:-translate-y-0.5">
+                Save Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* TAB: PROJECTS */}
+      {activeTab === 'Projects' && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold font-heading m-0">Manage Projects</h2>
+            <button onClick={() => openModal('Project')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+              <HiPlus /> Add Project
             </button>
           </div>
-          <div className="divide-y divide-gray-50">
-            {recentMessages.map((msg, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50/50 transition-colors cursor-pointer group"
-              >
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${
-                  !msg.read ? 'bg-gradient-to-br from-lavender-400 to-teal-400' : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {msg.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+          <div className="space-y-4">
+            {projects.map(p => (
+              <div key={p.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                <div>
+                  <h3 className="font-semibold text-gray-800 m-0">{p.title}</h3>
+                  <p className="text-xs text-gray-500 m-0 mt-1">{p.category}</p>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-700 m-0 truncate">{msg.name}</p>
-                    {!msg.read && <span className="w-2 h-2 bg-lavender-500 rounded-full shrink-0" />}
-                  </div>
-                  <p className="text-xs text-gray-500 m-0 truncate">{msg.subject}</p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[11px] text-gray-400 flex items-center gap-1">
-                    <HiOutlineClock size={12} />
-                    {msg.time}
-                  </span>
-                  <button className="p-1 rounded-lg text-gray-300 hover:text-gray-500 hover:bg-gray-100 bg-transparent border-none cursor-pointer opacity-0 group-hover:opacity-100 transition-all">
-                    <HiOutlineDotsVertical size={14} />
-                  </button>
+                <div className="flex gap-2">
+                  <button onClick={() => openModal('Project', p)} className="p-2 text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 border-none cursor-pointer"><HiPencil /></button>
+                  <button onClick={() => handleDelete('Project', p.id)} className="p-2 text-blush-600 bg-blush-50 rounded-lg hover:bg-blush-100 border-none cursor-pointer"><HiTrash /></button>
                 </div>
               </div>
             ))}
           </div>
         </div>
+      )}
 
-        {/* Recent Activity */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-50">
-            <h2 className="text-base font-semibold text-gray-800 m-0 font-heading">Recent Activity</h2>
+      {/* TAB: SKILLS */}
+      {activeTab === 'Skills' && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold font-heading m-0">Manage Skills</h2>
+            <button onClick={() => openModal('Skill')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+              <HiPlus /> Add Skill
+            </button>
           </div>
-          <div className="p-6">
-            <div className="relative">
-              <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gray-100" />
-              <div className="space-y-5">
-                {recentActivity.map((activity, i) => (
-                  <div key={i} className="relative flex items-start gap-4 pl-6">
-                    <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full ${activity.color} border-3 border-white shadow-sm`} />
-                    <div>
-                      <p className="text-sm text-gray-700 m-0">
-                        <span className="font-medium">{activity.action}</span>{' '}
-                        <span className="text-gray-500">{activity.target}</span>
-                      </p>
-                      <p className="text-[11px] text-gray-400 m-0 mt-0.5 flex items-center gap-1">
-                        <HiOutlineClock size={10} />
-                        {activity.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+          <div className="space-y-4">
+            {skills.map(s => (
+              <div key={s.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                <div>
+                  <h3 className="font-semibold text-gray-800 m-0">{s.name}</h3>
+                  <div className="w-32 h-2 bg-gray-100 rounded-full mt-2"><div className="h-full bg-lavender-400 rounded-full" style={{ width: `${s.level}%` }}></div></div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => openModal('Skill', s)} className="p-2 text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 border-none cursor-pointer"><HiPencil /></button>
+                  <button onClick={() => handleDelete('Skill', s.id)} className="p-2 text-blush-600 bg-blush-50 rounded-lg hover:bg-blush-100 border-none cursor-pointer"><HiTrash /></button>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Quick Actions */}
-      <div className="mt-6 grid sm:grid-cols-3 gap-4">
-        {[
-          { label: 'Edit Portfolio', desc: 'Update your pages and content', color: 'from-lavender-500 to-lavender-600' },
-          { label: 'Add Project', desc: 'Showcase a new project or research', color: 'from-teal-500 to-teal-600' },
-          { label: 'View Analytics', desc: 'See detailed traffic reports', color: 'from-gold-500 to-gold-600' },
-        ].map((action) => (
-          <button
-            key={action.label}
-            className={`p-5 rounded-2xl bg-gradient-to-r ${action.color} text-white text-left border-none cursor-pointer shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300`}
-          >
-            <p className="text-sm font-semibold m-0">{action.label}</p>
-            <p className="text-xs opacity-80 m-0 mt-1">{action.desc}</p>
-          </button>
-        ))}
-      </div>
+      {/* TAB: EXPERIENCE */}
+      {activeTab === 'Experience' && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold font-heading m-0">Manage Experience</h2>
+            <button onClick={() => openModal('Experience')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+              <HiPlus /> Add Experience
+            </button>
+          </div>
+          <div className="space-y-4">
+            {experiences.map(e => (
+              <div key={e.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                <div>
+                  <h3 className="font-semibold text-gray-800 m-0">{e.title}</h3>
+                  <p className="text-xs text-gray-500 m-0 mt-1">{e.org} • {e.period}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => openModal('Experience', e)} className="p-2 text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 border-none cursor-pointer"><HiPencil /></button>
+                  <button onClick={() => handleDelete('Experience', e.id)} className="p-2 text-blush-600 bg-blush-50 rounded-lg hover:bg-blush-100 border-none cursor-pointer"><HiTrash /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: EDUCATION */}
+      {activeTab === 'Education' && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold font-heading m-0">Manage Education</h2>
+            <button onClick={() => openModal('Education')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+              <HiPlus /> Add Education
+            </button>
+          </div>
+          <div className="space-y-4">
+            {educations.map(e => (
+              <div key={e.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                <div>
+                  <h3 className="font-semibold text-gray-800 m-0">{e.title}</h3>
+                  <p className="text-xs text-gray-500 m-0 mt-1">{e.org} • {e.year}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => openModal('Education', e)} className="p-2 text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 border-none cursor-pointer"><HiPencil /></button>
+                  <button onClick={() => handleDelete('Education', e.id)} className="p-2 text-blush-600 bg-blush-50 rounded-lg hover:bg-blush-100 border-none cursor-pointer"><HiTrash /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB: VALUES */}
+      {activeTab === 'Values' && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold font-heading m-0">Manage My Values</h2>
+            <button onClick={() => openModal('Value')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+              <HiPlus /> Add Value
+            </button>
+          </div>
+          <div className="space-y-4">
+            {values.map(v => (
+              <div key={v.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="text-2xl">{v.icon}</div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 m-0">{v.title}</h3>
+                    <p className="text-xs text-gray-500 m-0 mt-1">{v.desc}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => openModal('Value', v)} className="p-2 text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 border-none cursor-pointer"><HiPencil /></button>
+                  <button onClick={() => handleDelete('Value', v.id)} className="p-2 text-blush-600 bg-blush-50 rounded-lg hover:bg-blush-100 border-none cursor-pointer"><HiTrash /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL (Shared for all entities) */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fade-in-up">
+            <div className="flex justify-between items-center p-6 border-b border-gray-100">
+              <h2 className="text-xl font-bold font-heading text-gray-800 m-0">
+                {editingItem ? 'Edit' : 'Add'} {modalType}
+              </h2>
+              <button onClick={closeModal} className="p-2 text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer"><HiX size={20} /></button>
+            </div>
+            
+            <form onSubmit={handleSave} className="p-6 space-y-4">
+              
+              {/* Project Fields */}
+              {modalType === 'Project' && (
+                <>
+                  <div>
+                    <label className="text-sm font-semibold block mb-1">Project Image</label>
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      className="w-full p-2 border rounded" 
+                      onChange={e => {
+                        const file = e.target.files[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onloadend = () => setFormData({...formData, image: reader.result})
+                          reader.readAsDataURL(file)
+                        }
+                      }} 
+                    />
+                    {formData.image && <img src={formData.image} alt="Preview" className="mt-2 h-16 rounded object-cover" />}
+                  </div>
+                  <div><label className="text-sm font-semibold block mb-1">Emoji (Fallback if no image)</label><input className="w-full p-2 border rounded" placeholder="e.g. 🌍" value={formData.emoji || ''} onChange={e => setFormData({...formData, emoji: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Title</label><input required className="w-full p-2 border rounded" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Category</label><input required className="w-full p-2 border rounded" value={formData.category || ''} onChange={e => setFormData({...formData, category: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Description</label><textarea required className="w-full p-2 border rounded" rows="3" value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Tags (comma separated)</label><input className="w-full p-2 border rounded" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : (formData.tags || '')} onChange={e => setFormData({...formData, tags: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Primary Link / Document URL (Optional)</label><input type="url" placeholder="https://..." className="w-full p-2 border rounded" value={formData.liveUrl || ''} onChange={e => setFormData({...formData, liveUrl: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Secondary / Reference URL (Optional)</label><input type="url" placeholder="https://..." className="w-full p-2 border rounded" value={formData.repoUrl || ''} onChange={e => setFormData({...formData, repoUrl: e.target.value})} /></div>
+                </>
+              )}
+
+              {/* Skill Fields */}
+              {modalType === 'Skill' && (
+                <>
+                  <div><label className="text-sm font-semibold block mb-1">Skill Name</label><input required className="w-full p-2 border rounded" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Level (0-100)</label><input type="number" min="0" max="100" required className="w-full p-2 border rounded" value={formData.level || 50} onChange={e => setFormData({...formData, level: e.target.value})} /></div>
+                </>
+              )}
+
+              {/* Experience Fields */}
+              {modalType === 'Experience' && (
+                <>
+                  <div><label className="text-sm font-semibold block mb-1">Title / Role</label><input required className="w-full p-2 border rounded" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Organization</label><input required className="w-full p-2 border rounded" value={formData.org || ''} onChange={e => setFormData({...formData, org: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Period</label><input required className="w-full p-2 border rounded" value={formData.period || ''} onChange={e => setFormData({...formData, period: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Location</label><input className="w-full p-2 border rounded" value={formData.location || ''} onChange={e => setFormData({...formData, location: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Type</label><input className="w-full p-2 border rounded" value={formData.type || ''} onChange={e => setFormData({...formData, type: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Description</label><textarea required className="w-full p-2 border rounded" rows="2" value={formData.desc || ''} onChange={e => setFormData({...formData, desc: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Achievements (1 per line)</label><textarea className="w-full p-2 border rounded" rows="4" value={Array.isArray(formData.achievements) ? formData.achievements.join('\n') : (formData.achievements || '')} onChange={e => setFormData({...formData, achievements: e.target.value})} /></div>
+                </>
+              )}
+
+              {/* Education Fields */}
+              {modalType === 'Education' && (
+                <>
+                  <div><label className="text-sm font-semibold block mb-1">Year / Period</label><input required className="w-full p-2 border rounded" value={formData.year || ''} onChange={e => setFormData({...formData, year: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Degree / Title</label><input required className="w-full p-2 border rounded" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Institution</label><input required className="w-full p-2 border rounded" value={formData.org || ''} onChange={e => setFormData({...formData, org: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Description</label><textarea required className="w-full p-2 border rounded" rows="3" value={formData.desc || ''} onChange={e => setFormData({...formData, desc: e.target.value})} /></div>
+                </>
+              )}
+
+              {/* Value Fields */}
+              {modalType === 'Value' && (
+                <>
+                  <div><label className="text-sm font-semibold block mb-1">Icon (Emoji or text)</label><input required className="w-full p-2 border rounded" value={formData.icon || ''} onChange={e => setFormData({...formData, icon: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Title</label><input required className="w-full p-2 border rounded" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1">Description</label><textarea required className="w-full p-2 border rounded" rows="3" value={formData.desc || ''} onChange={e => setFormData({...formData, desc: e.target.value})} /></div>
+                  <div>
+                    <label className="text-sm font-semibold block mb-1">Theme Color</label>
+                    <select className="w-full p-2 border rounded" value={formData.color || 'lavender'} onChange={e => setFormData({...formData, color: e.target.value})}>
+                      <option value="lavender">Lavender</option>
+                      <option value="teal">Teal</option>
+                      <option value="blush">Blush</option>
+                      <option value="gold">Gold</option>
+                    </select>
+                  </div>
+                </>
+              )}
+
+              <div className="pt-4 flex justify-end gap-3">
+                <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-semibold cursor-pointer border-none transition-colors">Cancel</button>
+                <button type="submit" className="px-4 py-2 bg-lavender-500 hover:bg-lavender-600 rounded-lg text-white font-semibold cursor-pointer border-none transition-colors">Save {modalType}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

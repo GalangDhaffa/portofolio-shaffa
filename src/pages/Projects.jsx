@@ -1,95 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SectionHeading from '../components/SectionHeading'
 import ProjectCard from '../components/ProjectCard'
 import { FiSearch } from 'react-icons/fi'
-
-const projects = [
-  {
-    title: 'ASEAN Youth Forum Policy Report',
-    category: 'Research',
-    description: 'Comprehensive policy report analyzing youth engagement frameworks across ASEAN member states, with recommendations for inclusive policymaking.',
-    tags: ['Policy Analysis', 'ASEAN', 'Youth'],
-    image: null,
-    liveUrl: '#',
-    repoUrl: null,
-  },
-  {
-    title: 'Climate Diplomacy in Southeast Asia',
-    category: 'Research',
-    description: 'Research paper exploring Indonesia\'s role in multilateral climate negotiations and the prospects for green diplomacy in the region.',
-    tags: ['Climate', 'Diplomacy', 'Indonesia'],
-    image: null,
-    liveUrl: '#',
-    repoUrl: null,
-  },
-  {
-    title: 'Digital Diplomacy Seminar Platform',
-    category: 'Project',
-    description: 'Full event management and digital platform for the international seminar on "Digital Diplomacy in the Post-Pandemic Era" with 500+ attendees.',
-    tags: ['Event', 'Digital', 'Platform'],
-    image: null,
-    liveUrl: '#',
-    repoUrl: '#',
-  },
-  {
-    title: 'Community Empowerment Initiative',
-    category: 'Community',
-    description: 'Student-led program connecting rural communities with international development resources, focusing on education and skill development.',
-    tags: ['Community', 'Development', 'Education'],
-    image: null,
-    liveUrl: null,
-    repoUrl: null,
-  },
-  {
-    title: 'Model UN Resolution Database',
-    category: 'Project',
-    description: 'Web-based database cataloging Model United Nations resolutions and position papers from national conferences.',
-    tags: ['MUN', 'Database', 'Web'],
-    image: null,
-    liveUrl: '#',
-    repoUrl: '#',
-  },
-  {
-    title: 'Cross-Cultural Exchange Toolkit',
-    category: 'Community',
-    description: 'A toolkit designed for student organizations to facilitate cross-cultural exchange workshops and dialogue sessions.',
-    tags: ['Culture', 'Workshop', 'Toolkit'],
-    image: null,
-    liveUrl: '#',
-    repoUrl: null,
-  },
-  {
-    title: 'ASEAN Security Dynamics Working Paper',
-    category: 'Research',
-    description: 'Co-authored working paper examining evolving security dynamics in ASEAN, focusing on maritime cooperation and non-traditional security threats.',
-    tags: ['Security', 'ASEAN', 'Maritime'],
-    image: null,
-    liveUrl: '#',
-    repoUrl: null,
-  },
-  {
-    title: 'Student Organization Management System',
-    category: 'Project',
-    description: 'Internal management system designed for HIMAHI to streamline member coordination, event planning, and financial tracking.',
-    tags: ['Management', 'System', 'Organization'],
-    image: null,
-    liveUrl: null,
-    repoUrl: '#',
-  },
-]
-
-const categories = ['All', 'Research', 'Project', 'Community']
+import { getItems } from '../utils/dataStore'
 
 export default function Projects() {
+  const [projects, setProjects] = useState([])
   const [activeCategory, setActiveCategory] = useState('All')
   const [searchTerm, setSearchTerm] = useState('')
+
+  useEffect(() => {
+    setProjects(getItems('projects'))
+  }, [])
+
+  const categories = ['All', ...new Set(projects.map((p) => p.category))]
 
   const filteredProjects = projects.filter((p) => {
     const matchCategory = activeCategory === 'All' || p.category === activeCategory
     const matchSearch =
       p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.tags.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()))
+      (p.tags && p.tags.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase())))
     return matchCategory && matchSearch
   })
 

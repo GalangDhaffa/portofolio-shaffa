@@ -1,73 +1,7 @@
+import { useState, useEffect } from 'react'
 import SectionHeading from '../components/SectionHeading'
 import { FiCalendar, FiMapPin, FiUsers, FiStar } from 'react-icons/fi'
-
-const experiences = [
-  {
-    title: 'Head of External Affairs',
-    org: 'FISIP Student Executive Board (BEM)',
-    period: '2024 – Present',
-    location: 'University Campus',
-    type: 'Leadership',
-    desc: 'Leading the external affairs division, managing inter-university partnerships, and coordinating with government agencies on student advocacy initiatives.',
-    achievements: [
-      'Established partnerships with 5 international student organizations',
-      'Organized 3 national-level policy discussion forums',
-      'Represented student body in university senate meetings',
-    ],
-  },
-  {
-    title: 'Director of International Seminar',
-    org: 'IR Student Association (HIMAHI)',
-    period: '2023 – 2024',
-    location: 'University Campus',
-    type: 'Event Management',
-    desc: 'Directed the planning and execution of an international seminar on "Digital Diplomacy in the Post-Pandemic Era" with 500+ participants.',
-    achievements: [
-      'Secured 4 international speakers from ASEAN embassies',
-      'Managed a team of 25 organizing committee members',
-      'Achieved 95% positive feedback from participants',
-    ],
-  },
-  {
-    title: 'Research Assistant',
-    org: 'Center for International Studies',
-    period: '2023 – 2024',
-    location: 'Research Center',
-    type: 'Research',
-    desc: 'Assisted senior researchers in data collection, literature review, and analysis for projects on regional security cooperation.',
-    achievements: [
-      'Co-authored 2 working papers on ASEAN security dynamics',
-      'Conducted field interviews with 15+ policy practitioners',
-      'Presented research findings at 2 academic conferences',
-    ],
-  },
-  {
-    title: 'Volunteer Coordinator',
-    org: 'Youth Diplomacy Foundation',
-    period: '2022 – 2023',
-    location: 'Regional Office',
-    type: 'Community Service',
-    desc: 'Coordinated volunteer programs bridging local communities with international humanitarian organizations.',
-    achievements: [
-      'Managed 50+ volunteers across 3 community projects',
-      'Raised funds for educational programs in rural areas',
-      'Facilitated cross-cultural exchange workshops',
-    ],
-  },
-  {
-    title: 'Delegate – Model United Nations',
-    org: 'National MUN Conference',
-    period: '2022',
-    location: 'Jakarta',
-    type: 'Competition',
-    desc: 'Represented as a delegate for the United Kingdom in the Security Council committee, debating peacekeeping operations.',
-    achievements: [
-      'Awarded Best Delegate in Security Council committee',
-      'Drafted successful resolution on conflict resolution',
-      'Recognized for outstanding diplomatic skills',
-    ],
-  },
-]
+import { getItems } from '../utils/dataStore'
 
 const typeColors = {
   Leadership: { bg: 'bg-lavender-50', text: 'text-lavender-600', border: 'border-lavender-200' },
@@ -78,6 +12,12 @@ const typeColors = {
 }
 
 export default function Experience() {
+  const [experiences, setExperiences] = useState([])
+
+  useEffect(() => {
+    setExperiences(getItems('experiences'))
+  }, [])
+
   return (
     <>
       {/* ── Hero ── */}

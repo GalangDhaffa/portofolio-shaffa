@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   HiOutlineViewGrid,
   HiOutlineDocumentText,
@@ -7,17 +7,30 @@ import {
   HiOutlineCog,
   HiOutlineLogout,
   HiOutlineUser,
+  HiOutlineHeart,
+  HiOutlineAcademicCap,
 } from 'react-icons/hi'
 
 const menuItems = [
-  { to: '/admin', icon: HiOutlineViewGrid, label: 'Dashboard' },
-  { to: '/admin/pages', icon: HiOutlineDocumentText, label: 'Pages' },
-  { to: '/admin/projects', icon: HiOutlineBriefcase, label: 'Projects' },
-  { to: '/admin/messages', icon: HiOutlineChatAlt2, label: 'Messages' },
-  { to: '/admin/settings', icon: HiOutlineCog, label: 'Settings' },
+  { id: 'Overview', icon: HiOutlineViewGrid, label: 'Overview' },
+  { id: 'Profile', icon: HiOutlineUser, label: 'Profile' },
+  { id: 'Projects', icon: HiOutlineBriefcase, label: 'Projects' },
+  { id: 'Skills', icon: HiOutlineDocumentText, label: 'Skills' },
+  { id: 'Experience', icon: HiOutlineChatAlt2, label: 'Experience' },
+  { id: 'Education', icon: HiOutlineAcademicCap, label: 'Education' },
+  { id: 'Values', icon: HiOutlineHeart, label: 'My Values' },
 ]
 
 export default function AdminSidebar() {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const currentTab = searchParams.get('tab') || 'Overview'
+
+  const handleLogout = () => {
+    localStorage.removeItem('shaffa_admin_auth')
+    navigate('/login')
+  }
+
   return (
     <aside className="w-64 min-h-screen bg-gradient-to-b from-[#2d2a32] to-[#1e1b22] text-white flex flex-col">
       {/* Brand */}
@@ -27,8 +40,8 @@ export default function AdminSidebar() {
             S
           </div>
           <div>
-            <h2 className="text-sm font-semibold m-0 font-sans">Admin Panel</h2>
-            <p className="text-xs text-gray-400 m-0">Portfolio CMS</p>
+            <div className="text-sm font-semibold m-0 font-sans text-white">Admin Dashboard</div>
+            <p className="text-xs text-gray-400 m-0">Shaffanadia</p>
           </div>
         </div>
       </div>
@@ -39,24 +52,23 @@ export default function AdminSidebar() {
           Menu
         </p>
         <ul className="list-none m-0 p-0 flex flex-col gap-1">
-          {menuItems.map(({ to, icon: Icon, label }) => (
-            <li key={to}>
-              <NavLink
-                to={to}
-                end
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium no-underline transition-all duration-200 ${
-                    isActive
-                      ? 'bg-lavender-500/20 text-lavender-300 shadow-sm'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`
-                }
-              >
-                <Icon size={18} />
-                {label}
-              </NavLink>
-            </li>
-          ))}
+          {menuItems.map(({ id, icon: Icon, label }) => {
+            const isActive = currentTab === id
+            return (
+              <li key={id}>
+                <Link
+                  to={`/admin?tab=${id}`}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium no-underline transition-all duration-200 ${isActive
+                    ? 'bg-lavender-500/20 text-lavender-300 shadow-sm'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                >
+                  <Icon size={18} />
+                  {label}
+                </Link>
+              </li>
+            )
+          })}
         </ul>
       </nav>
 
@@ -71,7 +83,10 @@ export default function AdminSidebar() {
             <p className="text-[11px] text-gray-500 m-0">Administrator</p>
           </div>
         </div>
-        <button className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white/5 text-gray-400 hover:text-blush-300 hover:bg-white/10 border-none cursor-pointer text-xs font-medium transition-all duration-200">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-white/5 text-gray-400 hover:text-blush-300 hover:bg-white/10 border-none cursor-pointer text-xs font-medium transition-all duration-200"
+        >
           <HiOutlineLogout size={14} />
           Sign Out
         </button>
