@@ -66,7 +66,7 @@ export default function Home() {
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-heading leading-tight mb-6 text-gray-800">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-heading leading-tight mb-6 text-gray-800 dark:text-white">
               {profile.homeGreeting || "Hi, I'm"}{' '}
               <span className="bg-gradient-to-r from-lavender-500 via-blush-400 to-teal-500 bg-clip-text text-transparent">
                 {profile.homeNameHighlight || "Shaffanadia"}
@@ -75,7 +75,7 @@ export default function Home() {
               {profile.homeNameSub || "Alfia Zahwah"}
             </h1>
 
-            <p className="text-lg text-gray-500 leading-relaxed mb-8 max-w-lg">
+            <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed mb-8 max-w-lg">
               {profile.homeDescription || (
                 <>
                   International Relations student at <strong className="text-teal-700">FISIP</strong>,
@@ -98,7 +98,7 @@ export default function Home() {
                   href={profile.cvLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-lavender-600 font-semibold text-sm no-underline border border-lavender-200 hover:bg-lavender-50 hover:-translate-y-0.5 transition-all duration-300 shadow-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 font-semibold text-sm no-underline border border-lavender-200 dark:border-lavender-800 hover:bg-lavender-50 dark:hover:bg-slate-700 hover:-translate-y-0.5 transition-all duration-300 shadow-sm"
                 >
                   <FiDownload size={16} />
                   Download CV
@@ -128,7 +128,7 @@ export default function Home() {
               <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-lavender-200 via-blush-100 to-teal-200 opacity-60 blur-sm" />
 
               {/* Avatar Container */}
-              <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-gradient-to-br from-lavender-100 via-cream-50 to-teal-50 border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden">
+              <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-full bg-gradient-to-br from-lavender-100 via-cream-50 to-teal-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800 border-4 border-white dark:border-slate-800 shadow-2xl flex items-center justify-center overflow-hidden">
                 {profile.homePhotoUrl ? (
                   <img src={profile.homePhotoUrl} alt="Shaffanadia" className="w-full h-full object-cover" />
                 ) : (
@@ -143,13 +143,13 @@ export default function Home() {
               </div>
 
               {/* Floating Badges */}
-              <div className="absolute -top-2 -right-2 px-3 py-1.5 rounded-xl bg-white shadow-lg border border-lavender-100 flex items-center gap-1.5 animate-float">
+              <div className="absolute -top-2 -right-2 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-lavender-100 dark:border-lavender-900 flex items-center gap-1.5 animate-float">
                 <FiMapPin size={12} className="text-blush-400" />
-                <span className="text-xs font-medium text-gray-600">Indonesia</span>
+                <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Indonesia</span>
               </div>
-              <div className="absolute -bottom-2 -left-2 px-3 py-1.5 rounded-xl bg-white shadow-lg border border-teal-100 flex items-center gap-1.5" style={{ animation: 'float 3.5s ease-in-out infinite 0.5s' }}>
+              <div className="absolute -bottom-2 -left-2 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-teal-100 dark:border-teal-900 flex items-center gap-1.5" style={{ animation: 'float 3.5s ease-in-out infinite 0.5s' }}>
                 <FiBookOpen size={12} className="text-teal-500" />
-                <span className="text-xs font-medium text-gray-600">IR Student</span>
+                <span className="text-xs font-medium text-gray-600 dark:text-gray-300">IR Student</span>
               </div>
             </div>
           </div>
@@ -157,16 +157,16 @@ export default function Home() {
       </section>
 
       {/* ── About Preview ── */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12 animate-fade-in-up">
             <span className="inline-block px-4 py-1.5 rounded-full bg-teal-50 text-teal-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-teal-100">
               About Me
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 dark:text-white mb-3">
               Passionate About Global Impact
             </h2>
-            <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed whitespace-pre-line">
+            <p className="text-gray-500 dark:text-gray-400 text-base max-w-2xl mx-auto leading-relaxed whitespace-pre-line">
               {profile.academicJourney || 'Welcome to my portfolio!'}
             </p>
           </div>
@@ -175,11 +175,11 @@ export default function Home() {
             {values.slice(0, 3).map((item) => (
               <div
                 key={item.id || item.title}
-                className={`p-6 rounded-2xl bg-white shadow-md hover:shadow-xl hover:shadow-${item.color || 'lavender'}-200/50 hover:-translate-y-1 transition-all duration-500 animate-fade-in-up cursor-default`}
+                className={`p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-md hover:shadow-xl hover:shadow-${item.color || 'lavender'}-200/50 hover:-translate-y-1 transition-all duration-500 animate-fade-in-up cursor-default`}
               >
                 <span className="text-3xl block mb-4">{item.icon || '✨'}</span>
-                <h3 className="text-lg font-semibold font-heading text-gray-800 mb-2 m-0">{item.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed m-0">{item.desc}</p>
+                <h3 className="text-lg font-semibold font-heading text-gray-800 dark:text-white mb-2 m-0">{item.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed m-0">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -197,16 +197,16 @@ export default function Home() {
       </section>
 
       {/* ── Featured Projects Preview ── */}
-      <section className="py-20 bg-gradient-to-b from-white to-cream-50">
+      <section className="py-20 bg-gradient-to-b from-white to-cream-50 dark:from-slate-900 dark:to-slate-800/50 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12 animate-fade-in-up">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-gold-50 text-gold-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-gold-200">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-gold-50 dark:bg-gold-900/30 text-gold-600 dark:text-gold-400 text-xs font-semibold uppercase tracking-widest mb-4 border border-gold-200 dark:border-gold-800">
               Featured Work
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 dark:text-white mb-3">
               Projects & Research
             </h2>
-            <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed">
+            <p className="text-gray-500 dark:text-gray-400 text-base max-w-2xl mx-auto leading-relaxed">
               A selection of my most impactful projects and research contributions.
             </p>
           </div>
@@ -215,7 +215,7 @@ export default function Home() {
             {projects.slice(0, 3).map((project) => (
               <div
                 key={project.id || project.title}
-                className="group bg-white rounded-2xl overflow-hidden border border-lavender-100/60 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 animate-fade-in-up flex flex-col"
+                className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-lavender-100/60 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 animate-fade-in-up flex flex-col"
               >
                 {project.image ? (
                   <div className="h-40 overflow-hidden relative">
@@ -230,15 +230,15 @@ export default function Home() {
                   </div>
                 )}
                 <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="text-base font-semibold text-gray-800 mb-2 m-0 font-heading group-hover:text-lavender-700 transition-colors line-clamp-1">
+                  <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-2 m-0 font-heading group-hover:text-lavender-700 dark:group-hover:text-lavender-400 transition-colors line-clamp-1">
                     {project.title}
                   </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed mb-4 m-0 flex-1 line-clamp-2">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4 m-0 flex-1 line-clamp-2">
                     {project.description}
                   </p>
                   <div className="flex gap-2 flex-wrap">
                     {(project.tags || []).slice(0, 3).map((tag) => (
-                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-cream-100 text-[11px] font-medium text-gold-700">
+                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-cream-100 dark:bg-slate-700 text-[11px] font-medium text-gold-700 dark:text-gold-300">
                         {tag}
                       </span>
                     ))}

@@ -35,17 +35,17 @@ export default function Projects() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="py-20 bg-gradient-to-br from-gold-50 via-cream-50 to-lavender-50 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-gold-50 via-cream-50 to-lavender-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden transition-colors duration-300">
         <div className="absolute top-10 left-10 w-56 h-56 bg-gold-200/20 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-lavender-200/15 rounded-full blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-gold-50 text-gold-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-gold-200">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-gold-50 dark:bg-slate-800 text-gold-600 dark:text-gold-400 text-xs font-semibold uppercase tracking-widest mb-4 border border-gold-200 dark:border-slate-700">
             Projects & Research
           </span>
-          <h1 className="text-3xl md:text-5xl font-bold font-heading text-gray-800 mb-4 animate-fade-in-up">
+          <h1 className="text-3xl md:text-5xl font-bold font-heading text-gray-800 dark:text-white mb-4 animate-fade-in-up">
             My Work & Contributions
           </h1>
-          <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <p className="text-gray-500 dark:text-gray-400 text-base max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             Explore my research papers, project initiatives, and community programs 
             that reflect my commitment to global affairs and social impact.
           </p>
@@ -53,7 +53,7 @@ export default function Projects() {
       </section>
 
       {/* ── Filters & Grid ── */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6">
           {/* Filter Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10">
@@ -65,8 +65,8 @@ export default function Projects() {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-4 py-2 rounded-full text-sm font-medium border-none cursor-pointer transition-all duration-300 ${
                     activeCategory === cat
-                      ? 'bg-lavender-500 text-white shadow-md shadow-lavender-200'
-                      : 'bg-gray-50 text-gray-500 hover:bg-lavender-50 hover:text-lavender-600'
+                      ? 'bg-lavender-500 text-white shadow-md shadow-lavender-200 dark:shadow-none'
+                      : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-lavender-50 dark:hover:bg-slate-700 hover:text-lavender-600 dark:hover:text-lavender-300'
                   }`}
                 >
                   {cat}
@@ -75,14 +75,14 @@ export default function Projects() {
             </div>
 
             {/* Search */}
-            <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-2.5 w-full sm:w-72 border border-gray-100">
-              <FiSearch size={16} className="text-gray-400" />
+            <div className="flex items-center gap-2 bg-gray-50 dark:bg-slate-800 rounded-xl px-4 py-2.5 w-full sm:w-72 border border-gray-100 dark:border-slate-700 transition-colors">
+              <FiSearch size={16} className="text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-transparent border-none outline-none text-sm text-gray-600 placeholder-gray-400 w-full font-sans"
+                className="bg-transparent border-none outline-none text-sm text-gray-600 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 w-full font-sans"
               />
             </div>
           </div>

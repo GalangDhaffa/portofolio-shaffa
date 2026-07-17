@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme {
   /* ── Soft & Calm Tech Pastel Palette ── */
   --color-lavender-50: #f5f0ff;
@@ -80,11 +82,21 @@ body {
   color: #3d3b40;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-color: #0f172a; /* slate-900 */
+  color: #f8fafc; /* slate-50 */
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-heading);
   color: #2d2a32;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4 {
+  color: #f8fafc;
 }
 
 /* ── Scrollbar Styling ── */
@@ -172,8 +184,8 @@ h1, h2, h3, h4 {
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.glass-dark {
-  background: rgba(45, 42, 50, 0.75);
+.dark .glass {
+  background: rgba(15, 23, 42, 0.75); /* slate-900 */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);

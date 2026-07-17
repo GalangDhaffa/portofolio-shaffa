@@ -45,15 +45,15 @@ export default function Footer() {
   const socials = Array.isArray(profile.socialLinks) ? profile.socialLinks.filter(s => s.url) : []
 
   return (
-    <footer className="bg-gradient-to-b from-cream-50 to-lavender-50 border-t border-lavender-100">
+    <footer className="bg-gradient-to-b from-cream-50 to-lavender-50 dark:from-slate-900 dark:to-slate-900 border-t border-lavender-100 dark:border-slate-800 transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Top Section */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
           {/* Brand */}
           <div className="text-center md:text-left">
             <Link to="/" className="no-underline">
-              <h3 className="font-heading text-2xl font-semibold text-lavender-800 m-0">
-                Shaffanadia<span className="text-teal-500">.</span>
+              <h3 className="font-heading text-2xl font-semibold text-lavender-800 dark:text-lavender-300 m-0">
+                Shaffanadia<span className="text-teal-500 dark:text-teal-400">.</span>
               </h3>
             </Link>
             <p className="text-sm text-gray-400 mt-1">
@@ -87,7 +87,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     aria-label={social.name}
                     title={social.name}
-                    className="w-10 h-10 rounded-full bg-white border border-lavender-100 flex items-center justify-center text-lavender-400 hover:text-white hover:bg-lavender-500 hover:border-lavender-500 shadow-sm transition-all duration-300 hover:-translate-y-1 no-underline"
+                    className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-lavender-100 dark:border-slate-700 flex items-center justify-center text-lavender-400 dark:text-lavender-300 hover:text-white dark:hover:text-white hover:bg-lavender-500 hover:border-lavender-500 shadow-sm transition-all duration-300 hover:-translate-y-1 no-underline"
                   >
                     <Icon size={16} />
                   </a>
@@ -98,7 +98,7 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-lavender-200 to-transparent mb-6" />
+        <div className="h-px bg-gradient-to-r from-transparent via-lavender-200 dark:via-slate-700 to-transparent mb-6" />
 
         {/* Bottom */}
         <p className="text-center text-xs text-gray-400">

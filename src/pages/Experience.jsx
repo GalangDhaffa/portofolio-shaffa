@@ -4,11 +4,11 @@ import { FiCalendar, FiMapPin, FiUsers, FiStar } from 'react-icons/fi'
 import { getItems } from '../utils/dataStore'
 
 const typeColors = {
-  Leadership: { bg: 'bg-lavender-50', text: 'text-lavender-600', border: 'border-lavender-200' },
-  'Event Management': { bg: 'bg-teal-50', text: 'text-teal-600', border: 'border-teal-200' },
-  Research: { bg: 'bg-gold-50', text: 'text-gold-600', border: 'border-gold-200' },
-  'Community Service': { bg: 'bg-blush-50', text: 'text-blush-600', border: 'border-blush-200' },
-  Competition: { bg: 'bg-cream-100', text: 'text-gold-700', border: 'border-cream-300' },
+  Leadership: { bg: 'bg-lavender-50 dark:bg-lavender-900/30', text: 'text-lavender-600 dark:text-lavender-300', border: 'border-lavender-200 dark:border-lavender-800' },
+  'Event Management': { bg: 'bg-teal-50 dark:bg-teal-900/30', text: 'text-teal-600 dark:text-teal-300', border: 'border-teal-200 dark:border-teal-800' },
+  Research: { bg: 'bg-gold-50 dark:bg-gold-900/30', text: 'text-gold-600 dark:text-gold-300', border: 'border-gold-200 dark:border-gold-800' },
+  'Community Service': { bg: 'bg-blush-50 dark:bg-blush-900/30', text: 'text-blush-600 dark:text-blush-300', border: 'border-blush-200 dark:border-blush-800' },
+  Competition: { bg: 'bg-cream-100 dark:bg-cream-900/30', text: 'text-gold-700 dark:text-gold-400', border: 'border-cream-300 dark:border-cream-800' },
 }
 
 export default function Experience() {
@@ -29,17 +29,17 @@ export default function Experience() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="py-20 bg-gradient-to-br from-teal-50 via-cream-50 to-lavender-50 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-teal-50 via-cream-50 to-lavender-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden transition-colors duration-300">
         <div className="absolute top-10 right-10 w-48 h-48 bg-teal-200/20 rounded-full blur-3xl" />
         <div className="absolute bottom-10 left-10 w-64 h-64 bg-lavender-200/15 rounded-full blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-teal-50 text-teal-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-teal-100">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-teal-50 dark:bg-slate-800 text-teal-600 dark:text-teal-400 text-xs font-semibold uppercase tracking-widest mb-4 border border-teal-100 dark:border-slate-700">
             Organizational Experience
           </span>
-          <h1 className="text-3xl md:text-5xl font-bold font-heading text-gray-800 mb-4 animate-fade-in-up">
+          <h1 className="text-3xl md:text-5xl font-bold font-heading text-gray-800 dark:text-white mb-4 animate-fade-in-up">
             Leadership & Engagement
           </h1>
-          <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <p className="text-gray-500 dark:text-gray-400 text-base max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             A collection of meaningful roles and contributions in student organizations, 
             research institutions, and community initiatives.
           </p>
@@ -47,7 +47,7 @@ export default function Experience() {
       </section>
 
       {/* ── Experience Timeline ── */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-6">
           <div className="relative">
             {/* Vertical Line */}
@@ -59,22 +59,22 @@ export default function Experience() {
                 return (
                   <div key={i} className="relative pl-14 animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s` }}>
                     {/* Timeline Dot */}
-                    <div className="absolute left-[16px] top-2 w-3 h-3 bg-gradient-to-br from-lavender-400 to-teal-400 rounded-full border-4 border-white shadow z-10" />
+                    <div className="absolute left-[16px] top-2 w-3 h-3 bg-gradient-to-br from-lavender-400 to-teal-400 rounded-full border-4 border-white dark:border-slate-900 shadow z-10" />
 
                     {/* Card */}
-                    <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-lg transition-all duration-500 group">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 p-6 shadow-sm hover:shadow-lg transition-all duration-500 group">
                       {/* Header */}
                       <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                         <div>
                           <span className={`inline-block px-2.5 py-1 rounded-lg ${colors.bg} ${colors.text} text-[11px] font-semibold uppercase tracking-wider mb-2`}>
                             {exp.type}
                           </span>
-                          <h3 className="text-xl font-semibold font-heading text-gray-800 m-0 group-hover:text-lavender-700 transition-colors">
+                          <h3 className="text-xl font-semibold font-heading text-gray-800 dark:text-white m-0 group-hover:text-lavender-700 dark:group-hover:text-lavender-400 transition-colors">
                             {exp.title}
                           </h3>
-                          <p className="text-sm font-medium text-teal-600 mt-1 m-0">{exp.org}</p>
+                          <p className="text-sm font-medium text-teal-600 dark:text-teal-400 mt-1 m-0">{exp.org}</p>
                         </div>
-                        <div className="flex flex-col items-end gap-1 text-xs text-gray-400">
+                        <div className="flex flex-col items-end gap-1 text-xs text-gray-400 dark:text-gray-500">
                           <span className="flex items-center gap-1">
                             <FiCalendar size={12} />
                             {exp.period}
@@ -87,17 +87,17 @@ export default function Experience() {
                       </div>
 
                       {/* Description */}
-                      <p className="text-sm text-gray-500 leading-relaxed mb-4">{exp.desc}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">{exp.desc}</p>
 
                       {/* Achievements */}
                       <div className="space-y-2">
-                        <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                        <p className="text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
                           <FiStar size={12} className="text-gold-500" />
                           Key Achievements
                         </p>
                         <ul className="m-0 pl-0 list-none space-y-1.5">
                           {exp.achievements.map((ach, j) => (
-                            <li key={j} className="flex items-start gap-2 text-sm text-gray-500">
+                            <li key={j} className="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400">
                               <span className="w-1.5 h-1.5 rounded-full bg-teal-400 mt-1.5 shrink-0" />
                               {ach}
                             </li>

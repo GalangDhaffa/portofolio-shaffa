@@ -84,17 +84,17 @@ export default function Contact() {
   return (
     <>
       {/* ── Hero ── */}
-      <section className="py-20 bg-gradient-to-br from-blush-50 via-cream-50 to-lavender-50 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-blush-50 via-cream-50 to-lavender-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden transition-colors duration-300">
         <div className="absolute top-10 right-10 w-48 h-48 bg-blush-200/20 rounded-full blur-3xl" />
         <div className="absolute bottom-10 left-10 w-64 h-64 bg-lavender-200/15 rounded-full blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-blush-50 text-blush-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-blush-200">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-blush-50 dark:bg-slate-800 text-blush-600 dark:text-blush-400 text-xs font-semibold uppercase tracking-widest mb-4 border border-blush-200 dark:border-slate-700">
             Contact Me
           </span>
-          <h1 className="text-3xl md:text-5xl font-bold font-heading text-gray-800 mb-4 animate-fade-in-up">
+          <h1 className="text-3xl md:text-5xl font-bold font-heading text-gray-800 dark:text-white mb-4 animate-fade-in-up">
             Let's Get In Touch
           </h1>
-          <p className="text-gray-500 text-base max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <p className="text-gray-500 dark:text-gray-400 text-base max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             Have a question, collaboration idea, or just want to say hello? 
             I'd love to hear from you. Fill out the form or reach out via social media.
           </p>
@@ -102,32 +102,32 @@ export default function Contact() {
       </section>
 
       {/* ── Contact Content ── */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-5 gap-12">
             {/* Contact Info */}
             <div className="lg:col-span-2 animate-fade-in-up">
-              <h2 className="text-2xl font-bold font-heading text-gray-800 mb-6">
+              <h2 className="text-2xl font-bold font-heading text-gray-800 dark:text-white mb-6">
                 Contact Information
               </h2>
-              <p className="text-sm text-gray-500 leading-relaxed mb-8">
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-8">
                 Feel free to reach out through any of these channels. I typically respond within 24 hours.
               </p>
 
               <div className="space-y-5 mb-10">
                 {contactInfo.map(({ icon: Icon, label, value, href }) => (
                   <div key={label} className="flex items-start gap-4 group">
-                    <div className="w-11 h-11 rounded-xl bg-lavender-50 flex items-center justify-center shrink-0 group-hover:bg-lavender-100 transition-colors">
-                      <Icon size={18} className="text-lavender-500" />
+                    <div className="w-11 h-11 rounded-xl bg-lavender-50 dark:bg-slate-800 flex items-center justify-center shrink-0 group-hover:bg-lavender-100 dark:group-hover:bg-slate-700 transition-colors">
+                      <Icon size={18} className="text-lavender-500 dark:text-lavender-400" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400 mb-0.5 m-0">{label}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mb-0.5 m-0">{label}</p>
                       {href ? (
-                        <a href={href} className="text-sm font-medium text-gray-700 no-underline hover:text-lavender-600 transition-colors">
+                        <a href={href} className="text-sm font-medium text-gray-700 dark:text-gray-200 no-underline hover:text-lavender-600 dark:hover:text-lavender-400 transition-colors">
                           {value}
                         </a>
                       ) : (
-                        <p className="text-sm font-medium text-gray-700 m-0">{value}</p>
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200 m-0">{value}</p>
                       )}
                     </div>
                   </div>
@@ -137,7 +137,7 @@ export default function Contact() {
               {/* Social */}
               {socials.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
+                  <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">
                     Follow Me
                   </p>
                   <div className="flex flex-wrap gap-3">
@@ -150,7 +150,7 @@ export default function Contact() {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={social.name}
-                          className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-white hover:bg-lavender-500 hover:border-lavender-500 transition-all duration-300 hover:-translate-y-0.5 no-underline"
+                          className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-white hover:bg-lavender-500 hover:border-lavender-500 transition-all duration-300 hover:-translate-y-0.5 no-underline"
                           title={social.name}
                         >
                           <Icon size={16} />
@@ -162,8 +162,8 @@ export default function Contact() {
               )}
 
               {/* Decorative Card */}
-              <div className="mt-10 p-6 rounded-2xl bg-gradient-to-br from-lavender-50 to-teal-50 border border-lavender-100/50">
-                <p className="text-sm font-medium text-gray-600 italic leading-relaxed m-0">
+              <div className="mt-10 p-6 rounded-2xl bg-gradient-to-br from-lavender-50 to-teal-50 dark:from-slate-800 dark:to-slate-700 border border-lavender-100/50 dark:border-slate-600">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300 italic leading-relaxed m-0">
                   "The best way to understand the world is to engage with the people in it."
                 </p>
                 <p className="text-xs text-lavender-500 mt-2 m-0 font-semibold">— Shaffanadia Alfia Zahwah</p>
@@ -172,22 +172,22 @@ export default function Contact() {
 
             {/* Contact Form */}
             <div className="lg:col-span-3 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              <div className="bg-cream-50/50 rounded-2xl p-8 border border-cream-200/50">
-                <h2 className="text-2xl font-bold font-heading text-gray-800 mb-6">
+              <div className="bg-cream-50/50 dark:bg-slate-800 rounded-2xl p-8 border border-cream-200/50 dark:border-slate-700">
+                <h2 className="text-2xl font-bold font-heading text-gray-800 dark:text-white mb-6">
                   Send a Message
                 </h2>
 
                 {submitted && (
-                  <div className="mb-6 p-4 rounded-xl bg-teal-50 border border-teal-200 flex items-center gap-3 animate-fade-in">
+                  <div className="mb-6 p-4 rounded-xl bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 flex items-center gap-3 animate-fade-in">
                     <FiCheckCircle className="text-teal-500 shrink-0" size={20} />
-                    <p className="text-sm text-teal-700 m-0">Thank you! Your message has been sent successfully.</p>
+                    <p className="text-sm text-teal-700 dark:text-teal-300 m-0">Thank you! Your message has been sent successfully.</p>
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wider">
+                      <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
                         Full Name
                       </label>
                       <input
@@ -197,11 +197,11 @@ export default function Contact() {
                         onChange={handleChange}
                         placeholder="Nama Anda"
                         required
-                        className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all font-sans"
+                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-lavender-400 dark:focus:border-lavender-500 focus:ring-2 focus:ring-lavender-100 dark:focus:ring-lavender-900/50 transition-all font-sans"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wider">
+                      <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
                         Email
                       </label>
                       <input
@@ -211,13 +211,13 @@ export default function Contact() {
                         onChange={handleChange}
                         placeholder="email@anda.com"
                         required
-                        className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all font-sans"
+                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-lavender-400 dark:focus:border-lavender-500 focus:ring-2 focus:ring-lavender-100 dark:focus:ring-lavender-900/50 transition-all font-sans"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wider">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
                       Subject
                     </label>
                     <input
@@ -227,12 +227,12 @@ export default function Contact() {
                       onChange={handleChange}
                       placeholder="Tentang apa pesan ini?"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all font-sans"
+                      className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-lavender-400 dark:focus:border-lavender-500 focus:ring-2 focus:ring-lavender-100 dark:focus:ring-lavender-900/50 transition-all font-sans"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wider">
+                    <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5 uppercase tracking-wider">
                       Message
                     </label>
                     <textarea
@@ -242,7 +242,7 @@ export default function Contact() {
                       placeholder="Tulis pesan Anda di sini..."
                       rows={5}
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm text-gray-700 placeholder-gray-400 outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all resize-none font-sans"
+                      className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-lavender-400 dark:focus:border-lavender-500 focus:ring-2 focus:ring-lavender-100 dark:focus:ring-lavender-900/50 transition-all resize-none font-sans"
                     />
                   </div>
 

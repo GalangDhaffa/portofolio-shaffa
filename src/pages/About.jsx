@@ -33,7 +33,7 @@ export default function About() {
   return (
     <>
       {/* ── Hero Banner ── */}
-      <section className="relative py-24 bg-gradient-to-br from-lavender-50 via-cream-50 to-teal-50 overflow-hidden">
+      <section className="relative py-24 bg-gradient-to-br from-lavender-50 via-cream-50 to-teal-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 overflow-hidden transition-colors duration-300">
         <div className="absolute top-0 right-0 w-80 h-80 bg-lavender-200/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-200/20 rounded-full blur-3xl" />
         
@@ -42,7 +42,7 @@ export default function About() {
             {/* Photo */}
             <div className="flex justify-center animate-fade-in-up">
               <div className="relative">
-                <div className="w-64 h-72 rounded-3xl bg-gradient-to-br from-lavender-200 via-blush-100 to-teal-100 shadow-xl overflow-hidden border-4 border-white flex items-center justify-center">
+                <div className="w-64 h-72 rounded-3xl bg-gradient-to-br from-lavender-200 via-blush-100 to-teal-100 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 shadow-xl overflow-hidden border-4 border-white dark:border-slate-900 flex items-center justify-center">
                   {profile.aboutPhotoUrl ? (
                     <img src={profile.aboutPhotoUrl} alt="Shaffanadia" className="w-full h-full object-cover" />
                   ) : (
@@ -55,10 +55,10 @@ export default function About() {
                     </div>
                   )}
                 </div>
-                <div className="absolute -bottom-3 -right-3 px-4 py-2 rounded-xl bg-white shadow-lg border border-gold-100">
+                <div className="absolute -bottom-3 -right-3 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-gold-100 dark:border-slate-700">
                   <div className="flex items-center gap-2">
                     <FiAward className="text-gold-500" size={16} />
-                    <span className="text-xs font-semibold text-gray-700">Dean's List</span>
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Dean's List</span>
                   </div>
                 </div>
               </div>
@@ -66,26 +66,26 @@ export default function About() {
 
             {/* Bio */}
             <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              <span className="inline-block px-4 py-1.5 rounded-full bg-lavender-50 text-lavender-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-lavender-100">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-lavender-50 dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 text-xs font-semibold uppercase tracking-widest mb-4 border border-lavender-100 dark:border-slate-700">
                 About Me
               </span>
-              <h1 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 mb-4">
+              <h1 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 dark:text-white mb-4">
                 Shaffanadia Alfia Zahwah
               </h1>
-              <p className="text-gray-500 leading-relaxed mb-4">
+              <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
                 I'm an International Relations student at <strong className="text-teal-700">FISIP</strong> with 
                 a deep passion for understanding the complexities of global politics, diplomacy, and 
                 cross-cultural communication.
               </p>
-              <p className="text-gray-500 leading-relaxed mb-6 whitespace-pre-line">
+              <p className="text-gray-500 dark:text-gray-400 leading-relaxed mb-6 whitespace-pre-line">
                 {profile.academicJourney}
               </p>
               <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                   <FiBookOpen className="text-lavender-500" size={16} />
                   <span>IR Student</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                   <FiGlobe className="text-teal-500" size={16} />
                   <span>Indonesia</span>
                 </div>
@@ -96,7 +96,7 @@ export default function About() {
       </section>
 
       {/* ── Values ── */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6">
           <SectionHeading
             label="My Values"
@@ -107,13 +107,13 @@ export default function About() {
             {values.map(({ icon, title, desc, color }, idx) => (
               <div
                 key={idx}
-                className="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 text-center animate-fade-in-up group"
+                className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 text-center animate-fade-in-up group"
               >
-                <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl bg-${color || 'lavender'}-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl bg-${color || 'lavender'}-50 dark:bg-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
                   <span className="text-2xl">{icon}</span>
                 </div>
-                <h3 className="text-base font-semibold font-heading text-gray-800 mb-2 m-0">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed m-0">{desc}</p>
+                <h3 className="text-base font-semibold font-heading text-gray-800 dark:text-white mb-2 m-0">{title}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed m-0">{desc}</p>
               </div>
             ))}
           </div>
@@ -121,7 +121,7 @@ export default function About() {
       </section>
 
       {/* ── Skills ── */}
-      <section className="py-20 bg-gradient-to-b from-white to-lavender-50/30">
+      <section className="py-20 bg-gradient-to-b from-white to-lavender-50/30 dark:from-slate-900 dark:to-slate-800 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-6">
           <SectionHeading
             label="Skills"
@@ -132,10 +132,10 @@ export default function About() {
             {skills.map((skill) => (
               <div key={skill.name} className="animate-fade-in-up">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-700">{skill.name}</span>
-                  <span className="text-xs font-semibold text-lavender-600">{skill.level}%</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{skill.name}</span>
+                  <span className="text-xs font-semibold text-lavender-600 dark:text-lavender-400">{skill.level}%</span>
                 </div>
-                <div className="w-full h-2.5 bg-lavender-100 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-lavender-100 dark:bg-slate-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-lavender-400 to-teal-400 rounded-full transition-all duration-1000"
                     style={{ width: `${skill.level}%` }}
@@ -148,7 +148,7 @@ export default function About() {
       </section>
 
       {/* ── Education Timeline ── */}
-      <section className="py-20 bg-cream-50/50">
+      <section className="py-20 bg-cream-50/50 dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-4xl mx-auto px-6">
           <SectionHeading
             label="Education"
@@ -163,14 +163,14 @@ export default function About() {
               {educations.map((item, i) => (
                 <div key={item.id} className={`relative flex items-start gap-6 ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
                   {/* Dot */}
-                  <div className="absolute left-[14px] md:left-1/2 md:-translate-x-1/2 w-2.5 h-2.5 bg-lavender-400 rounded-full border-4 border-cream-50 shadow-sm z-10 mt-2" />
+                  <div className="absolute left-[14px] md:left-1/2 md:-translate-x-1/2 w-2.5 h-2.5 bg-lavender-400 rounded-full border-4 border-cream-50 dark:border-slate-900 shadow-sm z-10 mt-2" />
                   
                   {/* Content */}
                   <div className={`ml-12 md:ml-0 md:w-[45%] ${i % 2 === 0 ? 'md:pr-8 md:text-right' : 'md:pl-8'} animate-fade-in-up`}>
                     <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider">{item.year}</span>
-                    <h3 className="text-lg font-semibold font-heading text-gray-800 mt-1 mb-1">{item.title}</h3>
-                    <p className="text-sm font-medium text-lavender-600 mb-2">{item.org}</p>
-                    <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                    <h3 className="text-lg font-semibold font-heading text-gray-800 dark:text-white mt-1 mb-1">{item.title}</h3>
+                    <p className="text-sm font-medium text-lavender-600 dark:text-lavender-400 mb-2">{item.org}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
               ))}

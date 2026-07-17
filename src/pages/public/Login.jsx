@@ -21,18 +21,18 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-lavender-50 via-cream-50 to-teal-50 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-lavender-50 via-cream-50 to-teal-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300 relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-lavender-200/30 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-teal-200/20 rounded-full blur-3xl" />
       
-      <div className="relative w-full max-w-md p-8 bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 z-10 animate-fade-in-up">
+      <div className="relative w-full max-w-md p-8 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 dark:border-slate-700/50 z-10 animate-fade-in-up">
         <div className="text-center mb-8">
           <div className="w-16 h-16 mx-auto bg-gradient-to-br from-lavender-400 to-teal-400 rounded-2xl flex items-center justify-center mb-4 shadow-lg text-white font-heading text-2xl font-bold">
             S
           </div>
-          <h1 className="text-3xl font-bold font-heading text-gray-800 mb-2">Welcome Back</h1>
-          <p className="text-sm text-gray-500">Sign in to manage your portfolio</p>
+          <h1 className="text-3xl font-bold font-heading text-gray-800 dark:text-white mb-2">Welcome Back</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Sign in to manage your portfolio</p>
         </div>
 
         {error && (
@@ -43,7 +43,7 @@ export default function Login() {
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email Address</label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Email Address</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FiMail className="text-gray-400" />
@@ -52,15 +52,15 @@ export default function Login() {
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all font-sans"
-                placeholder="contoh@email.com"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-lavender-400 dark:focus:border-lavender-500 focus:ring-2 focus:ring-lavender-100 dark:focus:ring-lavender-900/50 transition-all font-sans"
+                placeholder="example@email.com"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Password</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FiLock className="text-gray-400" />
@@ -69,7 +69,7 @@ export default function Login() {
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white/50 focus:bg-white focus:outline-none focus:border-lavender-400 focus:ring-2 focus:ring-lavender-100 transition-all font-sans"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-lavender-400 dark:focus:border-lavender-500 focus:ring-2 focus:ring-lavender-100 dark:focus:ring-lavender-900/50 transition-all font-sans"
                 placeholder="••••••••"
                 required
               />

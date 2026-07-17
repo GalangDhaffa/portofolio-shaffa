@@ -12,32 +12,36 @@ import AdminDashboard from './pages/AdminDashboard'
 import Login from './pages/public/Login'
 import { initializeDB } from './utils/dataStore'
 
+import { ThemeProvider } from './context/ThemeContext'
+
 function App() {
   useEffect(() => {
     initializeDB()
   }, [])
 
   return (
-    <Routes>
-      {/* Public Portfolio Routes */}
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/experience" element={<Experience />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/contact" element={<Contact />} />
-      </Route>
-
-      {/* Login Route */}
-      <Route path="/login" element={<Login />} />
-
-      {/* Admin Route (Protected) */}
-      <Route path="/admin" element={<ProtectedRoute />}>
-        <Route element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
+    <ThemeProvider>
+      <Routes>
+        {/* Public Portfolio Routes */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/experience" element={<Experience />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/contact" element={<Contact />} />
         </Route>
-      </Route>
-    </Routes>
+
+        {/* Login Route */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Admin Route (Protected) */}
+        <Route path="/admin" element={<ProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+          </Route>
+        </Route>
+      </Routes>
+    </ThemeProvider>
   )
 }
 
