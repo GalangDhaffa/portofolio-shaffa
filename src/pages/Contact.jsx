@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { FiMail, FiMapPin, FiPhone, FiSend, FiCheckCircle, FiGithub, FiLinkedin, FiTwitter, FiInstagram, FiYoutube, FiLink, FiFacebook } from 'react-icons/fi'
 import { FaWhatsapp, FaTiktok, FaTelegram, FaDiscord } from 'react-icons/fa'
 import { getProfile, addItem } from '../utils/dataStore'
-import Swal from 'sweetalert2'
+import Swal from '../utils/swalTheme'
 
 const socialIconMap = {
   github: FiGithub,

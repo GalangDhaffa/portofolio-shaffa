@@ -190,3 +190,103 @@ h1, h2, h3, h4 {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+/* ── SweetAlert2 Themed Styles ── */
+.swal-themed-popup {
+  border-radius: 1.25rem !important;
+  font-family: var(--font-sans) !important;
+  padding: 2rem !important;
+  border: 1px solid rgba(146, 71, 255, 0.15) !important;
+  box-shadow: 0 20px 60px rgba(146, 71, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+}
+
+.swal-themed-popup.swal-dark {
+  background: #1e293b !important; /* slate-800 */
+  border: 1px solid rgba(146, 71, 255, 0.2) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(146, 71, 255, 0.08) !important;
+}
+
+.swal-themed-title {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  font-size: 1.4rem !important;
+  color: #2d2a32 !important;
+}
+
+.swal-dark .swal-themed-title {
+  color: #f8fafc !important;
+}
+
+.swal-themed-text {
+  font-family: var(--font-sans) !important;
+  font-size: 0.9rem !important;
+  color: #6b7280 !important;
+  line-height: 1.6 !important;
+}
+
+.swal-dark .swal-themed-text {
+  color: #94a3b8 !important;
+}
+
+.swal-themed-confirm {
+  background: linear-gradient(to right, #9247ff, #8425f7) !important;
+  color: #fff !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  padding: 0.65rem 1.75rem !important;
+  border-radius: 0.75rem !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(146, 71, 255, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.swal-themed-confirm:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(146, 71, 255, 0.4) !important;
+}
+
+.swal-themed-cancel {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  padding: 0.65rem 1.75rem !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid #e5e7eb !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.swal-dark .swal-themed-cancel {
+  background: #334155 !important; /* slate-700 */
+  color: #cbd5e1 !important;
+  border: 1px solid #475569 !important;
+}
+
+.swal-themed-cancel:hover {
+  background: #e5e7eb !important;
+}
+
+.swal-dark .swal-themed-cancel:hover {
+  background: #475569 !important;
+}
+
+/* Override Swal icon colors to match theme */
+.swal-themed-popup .swal2-success-circular-line-left,
+.swal-themed-popup .swal2-success-circular-line-right,
+.swal-themed-popup .swal2-success-fix {
+  background: transparent !important;
+}
+
+.swal-dark .swal2-success-circular-line-left,
+.swal-dark .swal2-success-circular-line-right,
+.swal-dark .swal2-success-fix {
+  background: #1e293b !important;
+}
+
+.swal-themed-popup .swal2-timer-progress-bar {
+  background: linear-gradient(to right, #9247ff, #07c4b1) !important;
+}

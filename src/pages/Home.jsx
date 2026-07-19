@@ -88,7 +88,7 @@ export default function Home() {
             <div className="flex flex-wrap gap-4 mb-10">
               <Link
                 to="/projects"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm no-underline shadow-lg shadow-lavender-200 hover:shadow-xl hover:shadow-lavender-300 hover:-translate-y-0.5 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm no-underline shadow-lg shadow-lavender-200 dark:shadow-lavender-900/30 hover:shadow-xl hover:shadow-lavender-300 dark:hover:shadow-lavender-900/40 hover:-translate-y-0.5 transition-all duration-300"
               >
                 View My Work
                 <FiArrowRight size={16} />
@@ -98,7 +98,7 @@ export default function Home() {
                   href={profile.cvLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 font-semibold text-sm no-underline border border-lavender-200 dark:border-lavender-800 hover:bg-lavender-50 dark:hover:bg-slate-700 hover:-translate-y-0.5 transition-all duration-300 shadow-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 font-semibold text-sm no-underline border border-lavender-200 dark:border-lavender-800 hover:bg-lavender-50 dark:hover:bg-slate-700 hover:-translate-y-0.5 transition-all duration-300 shadow-md shadow-lavender-100/50 dark:shadow-slate-900/40 hover:shadow-lg hover:shadow-lavender-200/50 dark:hover:shadow-slate-900/50"
                 >
                   <FiDownload size={16} />
                   Download CV

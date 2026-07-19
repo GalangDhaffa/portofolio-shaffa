@@ -16,7 +16,7 @@ import {
   HiX
 } from 'react-icons/hi'
 import { getItems, addItem, updateItem, deleteItem, getViews, getProfile, updateProfile } from '../utils/dataStore'
-import Swal from 'sweetalert2'
+import Swal from '../utils/swalTheme'
 
 const compressImage = (file) => {
   return new Promise((resolve, reject) => {
