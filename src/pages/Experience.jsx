@@ -114,10 +114,10 @@ export default function Experience() {
       </section>
 
       {/* ── Summary Stats ── */}
-      <section className="py-16 bg-gradient-to-r from-lavender-500 to-teal-500 relative overflow-hidden">
+      <section className="py-16 bg-gradient-to-r from-lavender-500 to-teal-500 dark:from-slate-900 dark:to-slate-800 relative overflow-hidden transition-colors duration-300">
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/4 w-64 h-64 bg-white/10 dark:bg-lavender-500/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-white/10 dark:bg-teal-500/10 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -127,7 +127,7 @@ export default function Experience() {
               { value: new Set(experiences.map(e => e.type).filter(Boolean)).size, label: 'Fields', icon: FiStar },
               { value: experiences.reduce((sum, e) => sum + (Array.isArray(e.achievements) ? e.achievements.length : 0), 0), label: 'Achievements', icon: FiStar },
             ].map(({ value, label, icon: Icon }) => (
-              <div key={label} className="text-center text-white rounded-2xl p-6 bg-white/10 backdrop-blur-md border border-white/20 shadow-lg hover:bg-white/20 hover:scale-105 transition-all duration-300">
+              <div key={label} className="text-center text-white rounded-2xl p-6 bg-white/10 dark:bg-slate-800/60 backdrop-blur-md border border-white/20 dark:border-slate-700 shadow-lg hover:bg-white/20 dark:hover:bg-slate-700/60 hover:scale-105 transition-all duration-300">
                 <Icon size={22} className="mx-auto mb-3 opacity-80" />
                 <p className="text-3xl font-bold font-heading m-0">{value}{value > 0 ? '+' : ''}</p>
                 <p className="text-sm opacity-80 m-0 mt-1">{label}</p>

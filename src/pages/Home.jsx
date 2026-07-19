@@ -215,7 +215,7 @@ export default function Home() {
             {projects.slice(0, 3).map((project) => (
               <div
                 key={project.id || project.title}
-                className="group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-lavender-100/60 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 animate-fade-in-up flex flex-col"
+                className="group bg-white dark:bg-slate-800/80 rounded-2xl overflow-hidden border border-lavender-100/60 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 animate-fade-in-up flex flex-col"
               >
                 {project.image ? (
                   <div className="h-40 overflow-hidden relative">
@@ -223,7 +223,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                 ) : (
-                  <div className="h-40 bg-gradient-to-br from-lavender-100 to-teal-50 flex items-center justify-center">
+                  <div className="h-40 bg-gradient-to-br from-lavender-100 to-teal-50 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center">
                     <div className="w-14 h-14 rounded-2xl bg-white/50 backdrop-blur-sm flex items-center justify-center text-2xl">
                       {project.emoji || '✨'}
                     </div>
@@ -261,13 +261,13 @@ export default function Home() {
       </section>
 
       {/* ── CTA Section ── */}
-      <section className="py-20 bg-gradient-to-br from-lavender-500 via-lavender-600 to-teal-600 relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-lavender-500 via-lavender-600 to-teal-600 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden transition-colors duration-300">
         <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
-          <div className="absolute bottom-10 right-10 w-60 h-60 bg-teal-400/10 rounded-full blur-2xl" />
+          <div className="absolute top-10 left-10 w-40 h-40 bg-white/10 dark:bg-lavender-500/10 rounded-full blur-2xl" />
+          <div className="absolute bottom-10 right-10 w-60 h-60 bg-teal-400/10 dark:bg-teal-500/10 rounded-full blur-2xl" />
         </div>
         <div className="relative max-w-3xl mx-auto px-6">
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 md:p-14 text-center shadow-2xl">
+          <div className="bg-white/10 dark:bg-slate-800/60 backdrop-blur-xl border border-white/20 dark:border-slate-700 rounded-3xl p-10 md:p-14 text-center shadow-2xl">
             <h2 className="text-3xl md:text-4xl font-bold font-heading !text-white mb-4">
               Let's Connect & Collaborate
             </h2>
