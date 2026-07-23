@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
   HiOutlineEye,
@@ -13,7 +13,8 @@ import {
   HiPlus,
   HiPencil,
   HiTrash,
-  HiX
+  HiX,
+  HiOutlineCheckCircle
 } from 'react-icons/hi'
 import { getItems, addItem, updateItem, deleteItem, getViews, getProfile, updateProfile } from '../utils/dataStore'
 import Swal from '../utils/swalTheme'
@@ -70,11 +71,49 @@ export default function AdminDashboard() {
   const [profileForm, setProfileForm] = useState({})
   const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState('') // 'Project', 'Skill', 'Experience'
   const [editingItem, setEditingItem] = useState(null)
-  
+  const [selectedMessages, setSelectedMessages] = useState([])
+
+  const handleBulkDelete = () => {
+    if (selectedMessages.length === 0) return
+    const isDark = document.documentElement.classList.contains('dark')
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete ${selectedMessages.length} message(s).`,
+      icon: 'warning',
+      showCancelButton: true,
+      background: isDark ? '#1e293b' : '#ffffff',
+      color: isDark ? '#ffffff' : '#1f2937',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Yes, delete!',
+      customClass: { 
+        popup: 'rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xl',
+        actions: 'flex gap-3 justify-center mt-6',
+        confirmButton: 'px-5 py-2.5 bg-blush-500 hover:bg-blush-600 text-white text-sm font-semibold rounded-lg transition-colors border-none cursor-pointer',
+        cancelButton: 'px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-lg transition-colors border-none cursor-pointer'
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setIsLoading(true)
+        try {
+          const promises = selectedMessages.map(id => deleteItem('messages', id))
+          await Promise.all(promises)
+          setSelectedMessages([])
+          await refreshData()
+          Swal.fire({ title: 'Deleted!', text: 'Messages have been deleted.', icon: 'success', confirmButtonColor: '#8b5cf6', timer: 1500, showConfirmButton: false })
+        } catch (error) {
+          console.error("Bulk delete failed:", error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    })
+  }
+
   // Form States
   const [formData, setFormData] = useState({})
 
@@ -92,9 +131,139 @@ export default function AdminDashboard() {
   const filteredValues = values.filter(v => v.title.toLowerCase().includes(searchQuery.toLowerCase()) || v.desc.toLowerCase().includes(searchQuery.toLowerCase()))
   const filteredMessages = messages.filter(m => (m.subject && m.subject.toLowerCase().includes(searchQuery.toLowerCase())) || (m.message && m.message.toLowerCase().includes(searchQuery.toLowerCase())) || (m.name && m.name.toLowerCase().includes(searchQuery.toLowerCase())))
 
+  const hasShownPopup = useRef(false)
+
   useEffect(() => {
     refreshData()
   }, [])
+
+  const showNotificationPopup = () => {
+    const unreadMsgs = messages.filter(m => !m.read)
+    if (unreadMsgs.length === 0) {
+      const isDark = document.documentElement.classList.contains('dark')
+      Swal.fire({
+        title: 'No new messages',
+        icon: 'info',
+        toast: true,
+        position: 'top-end',
+        background: isDark ? '#1e293b' : '#ffffff',
+        color: isDark ? '#ffffff' : '#1f2937',
+        showConfirmButton: false,
+        timer: 3000,
+        customClass: { popup: 'mt-16 mr-2 sm:mr-6 border border-gray-100 dark:border-slate-700 shadow-xl' }
+      })
+      return
+    }
+
+    const latestMsgs = unreadMsgs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3)
+    const isDark = document.documentElement.classList.contains('dark')
+    let htmlContent = `
+      <style>
+        .custom-swal-toast {
+          overflow: visible !important;
+        }
+        .custom-swal-toast::before {
+          content: '';
+          position: absolute;
+          top: -6px;
+          right: 48px;
+          width: 12px;
+          height: 12px;
+          background: ${isDark ? '#1e293b' : '#ffffff'};
+          border-left: 1px solid ${isDark ? '#334155' : '#f3f4f6'};
+          border-top: 1px solid ${isDark ? '#334155' : '#f3f4f6'};
+          transform: rotate(45deg);
+          z-index: 10;
+        }
+      </style>
+      <div style="font-size: 13px; margin-bottom: 12px; color: ${isDark ? '#cbd5e1' : '#4b5563'}">You have <b>${unreadMsgs.length}</b> unread message(s).</div>
+    `
+    if (latestMsgs.length > 0) {
+      htmlContent += '<div style="display: flex; flex-direction: column; gap: 8px;">'
+      latestMsgs.forEach(msg => {
+        const snippet = msg.message.length > 50 ? msg.message.substring(0, 50) + '...' : msg.message;
+        htmlContent += `<div style="text-align:left; background: rgba(139, 92, 246, 0.1); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #8b5cf6;"><b style="color: #8b5cf6; font-size: 13px;">${msg.name}</b><br><span style="font-size: 12px; color: ${isDark ? '#9ca3af' : '#6b7280'};">"${snippet}"</span></div>`
+      })
+      htmlContent += '</div>'
+    }
+
+    Swal.fire({
+      title: `<span style="font-size: 15px; font-weight: 600; color: ${isDark ? '#fff' : '#1f2937'}">New Message Notification</span>`,
+      html: htmlContent,
+      icon: 'info',
+      toast: false,
+      backdrop: false,
+      position: 'top-end',
+      width: 'clamp(300px, 90%, 560px)',
+      background: isDark ? '#1e293b' : '#ffffff',
+      color: isDark ? '#ffffff' : '#1f2937',
+      showConfirmButton: true,
+      confirmButtonText: 'Mark All Read',
+      showCancelButton: true,
+      cancelButtonText: 'Dismiss',
+      showCloseButton: true,
+      confirmButtonColor: '#8b5cf6',
+      timer: 10000,
+      timerProgressBar: true,
+      customClass: {
+        container: 'mt-16 sm:mt-16 mr-2 sm:mr-6',
+        popup: 'custom-swal-toast shadow-2xl shadow-lavender-500/10 border border-gray-100 dark:border-slate-700',
+        actions: 'flex flex-col sm:flex-row gap-3 w-full justify-end px-4 pb-4',
+        confirmButton: 'px-4 py-2 bg-lavender-500 hover:bg-lavender-600 text-white text-sm font-semibold rounded-lg transition-colors border-none cursor-pointer',
+        cancelButton: 'px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-lg transition-colors border-none cursor-pointer',
+        closeButton: 'hover:text-lavender-500 transition-colors'
+      },
+      showClass: { popup: 'animate__animated animate__fadeInDown animate__faster' },
+      hideClass: { popup: 'animate__animated animate__fadeOutUp animate__faster' }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setIsLoading(true)
+        try {
+          const promises = unreadMsgs.map(msg => updateItem('messages', msg.id, { read: true }))
+          await Promise.all(promises)
+          await refreshData()
+          Swal.fire({
+            html: '<span style="font-size: 13px; font-weight: 500;">Messages marked as read</span>',
+            icon: 'success',
+            toast: true,
+            position: 'top',
+            width: 'auto',
+            padding: '0.5em 1em',
+            background: isDark ? '#1e293b' : '#ffffff',
+            color: isDark ? '#ffffff' : '#1f2937',
+            timer: 2000,
+            showConfirmButton: false,
+            customClass: {
+              popup: 'shadow-md border border-gray-100 dark:border-slate-700 mt-4',
+              title: 'text-sm'
+            }
+          })
+        } catch (error) {
+          console.error("Failed to mark messages as read:", error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (!isLoading && messages.length > 0 && !hasShownPopup.current) {
+      const unreadMsgs = messages.filter(m => !m.read)
+      if (unreadMsgs.length > 0) {
+        hasShownPopup.current = true
+        showNotificationPopup()
+      } else {
+        hasShownPopup.current = true
+      }
+    }
+  }, [messages, isLoading])
+
+  useEffect(() => {
+    const handleTriggerPopup = () => showNotificationPopup()
+    window.addEventListener('trigger-notification', handleTriggerPopup)
+    return () => window.removeEventListener('trigger-notification', handleTriggerPopup)
+  }, [messages, isLoading])
 
   const refreshData = async () => {
     setIsLoading(true)
@@ -218,25 +387,34 @@ export default function AdminDashboard() {
   }
 
   const handleDelete = async (type, id) => {
+    const isDark = document.documentElement.classList.contains('dark')
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: `You won't be able to revert this ${type}!`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444', // red-500 for delete
-      cancelButtonColor: '#8b5cf6', // lavender-500
-      confirmButtonText: 'Yes, delete it!'
+      background: isDark ? '#1e293b' : '#ffffff',
+      color: isDark ? '#ffffff' : '#1f2937',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#8b5cf6',
+      confirmButtonText: 'Yes, delete it!',
+      customClass: { 
+        popup: 'rounded-2xl border border-gray-100 dark:border-slate-700 shadow-xl',
+        actions: 'flex gap-3 justify-center mt-6',
+        confirmButton: 'px-5 py-2.5 bg-blush-500 hover:bg-blush-600 text-white text-sm font-semibold rounded-lg transition-colors border-none cursor-pointer',
+        cancelButton: 'px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-700 dark:text-gray-200 text-sm font-semibold rounded-lg transition-colors border-none cursor-pointer'
+      }
     })
-    
+
     if (!result.isConfirmed) return
-    
+
     setIsLoading(true)
     let key = type.toLowerCase() + 's'
     if (type === 'Experience') key = 'experiences'
     if (type === 'Education') key = 'educations'
     if (type === 'Value') key = 'values'
     if (type === 'Message') key = 'messages'
-    
+
     try {
       await deleteItem(key, id)
       await refreshData()
@@ -274,11 +452,10 @@ export default function AdminDashboard() {
           <button
             key={tab}
             onClick={() => setSearchParams({ tab })}
-            className={`pb-3 px-2 text-sm font-semibold transition-all border-b-2 bg-transparent cursor-pointer ${
-              activeTab === tab 
-                ? 'border-lavender-500 text-lavender-600 dark:text-lavender-400' 
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-            }`}
+            className={`pb-3 px-2 text-sm font-semibold transition-all border-b-2 bg-transparent cursor-pointer ${activeTab === tab
+              ? 'border-lavender-500 text-lavender-600 dark:text-lavender-400'
+              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+              }`}
           >
             {tab}
           </button>
@@ -292,454 +469,520 @@ export default function AdminDashboard() {
       ) : (
         <>
           {/* TAB: OVERVIEW */}
-      {activeTab === 'Overview' && (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-          {dynamicStats.map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:shadow-lavender-500/10 dark:hover:shadow-lavender-900/20 transition-all duration-300 group">
-              <div className="flex items-start justify-between mb-3">
-                <div className={`w-11 h-11 rounded-xl bg-${color}-50 dark:bg-${color}-900/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon size={20} className={`text-${color}-500 dark:text-${color}-400`} />
-                </div>
-              </div>
-              <p className="text-2xl font-bold text-gray-800 dark:text-white m-0 font-heading">{value}</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 m-0 mt-1">{label}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* TAB: HOME */}
-      {activeTab === 'Home' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-          <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
-            <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Home Page Settings</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Manage your front page content and CV link.</p>
-          </div>
-          
-          <form onSubmit={handleProfileSave} className="space-y-6">
-            <div>
-              <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Home Photo</label>
-              <input 
-                type="file"
-                accept="image/*"
-                className="w-full p-2 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                onChange={async e => {
-                  const file = e.target.files[0]
-                  if (file) {
-                    try {
-                      const compressedBase64 = await compressImage(file)
-                      setProfileForm({...profileForm, homePhotoUrl: compressedBase64})
-                    } catch (err) {
-                      Swal.fire({ title: 'Error', text: 'Failed to process image', icon: 'error' })
-                    }
-                  }
-                }} 
-              />
-              {profileForm.homePhotoUrl && <img src={profileForm.homePhotoUrl} alt="Preview" className="mt-3 h-20 rounded shadow-sm object-cover" />}
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
-              <div>
-                <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Greeting</label>
-                <input 
-                  type="text"
-                  maxLength={20}
-                  placeholder="Contoh: Halo, saya"
-                  className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                  value={profileForm.homeGreeting || ''} 
-                  onChange={e => setProfileForm({...profileForm, homeGreeting: e.target.value})} 
-                />
-                <p className="text-[10px] text-gray-400 mt-1">Max 20 chars</p>
-              </div>
-              <div>
-                <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Name Highlight</label>
-                <input 
-                  type="text"
-                  maxLength={20}
-                  placeholder="Contoh: Shaffanadia"
-                  className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                  value={profileForm.homeNameHighlight || ''} 
-                  onChange={e => setProfileForm({...profileForm, homeNameHighlight: e.target.value})} 
-                />
-                <p className="text-[10px] text-gray-400 mt-1">Max 20 chars</p>
-              </div>
-              <div>
-                <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Name Subtitle</label>
-                <input 
-                  type="text"
-                  maxLength={30}
-                  placeholder="Contoh: Alfia Zahwah"
-                  className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                  value={profileForm.homeNameSub || ''} 
-                  onChange={e => setProfileForm({...profileForm, homeNameSub: e.target.value})} 
-                />
-                <p className="text-[10px] text-gray-400 mt-1">Max 30 chars</p>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Description</label>
-              <textarea 
-                className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                rows="3" 
-                maxLength={180}
-                placeholder="Contoh: Mahasiswa Hubungan Internasional di FISIP, sangat tertarik dengan diplomasi global..."
-                value={profileForm.homeDescription || ''} 
-                onChange={e => setProfileForm({...profileForm, homeDescription: e.target.value})} 
-              />
-              <p className="text-[10px] text-gray-400 mt-1 text-right">Max 180 chars</p>
-            </div>
-
-            <div>
-              <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">CV / Resume Link (Google Drive, etc.)</label>
-              <input 
-                type="url"
-                placeholder="Contoh: https://drive.google.com/file/d/.../view"
-                className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                value={profileForm.cvLink || ''} 
-                onChange={e => setProfileForm({...profileForm, cvLink: e.target.value})} 
-              />
-              <p className="text-[10px] text-gray-400 mt-1">Leave empty to hide the Download CV button</p>
-            </div>
-
-            <div className="pt-4 flex justify-end">
-              <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
-                Save Home Settings
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* TAB: ABOUT */}
-      {activeTab === 'About' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-          <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
-            <h2 className="text-lg font-bold font-heading m-0 dark:text-white">About Page Settings</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Update your about photo and academic journey.</p>
-          </div>
-          
-          <form onSubmit={handleProfileSave} className="space-y-6">
-            <div>
-              <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">About Photo</label>
-              <input 
-                type="file"
-                accept="image/*"
-                className="w-full p-2 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                onChange={async e => {
-                  const file = e.target.files[0]
-                  if (file) {
-                    try {
-                      const compressedBase64 = await compressImage(file)
-                      setProfileForm({...profileForm, aboutPhotoUrl: compressedBase64})
-                    } catch (err) {
-                      Swal.fire({ title: 'Error', text: 'Failed to process image', icon: 'error' })
-                    }
-                  }
-                }} 
-              />
-              {profileForm.aboutPhotoUrl && <img src={profileForm.aboutPhotoUrl} alt="Preview" className="mt-3 h-20 rounded shadow-sm object-cover" />}
-            </div>
-
-            <div>
-              <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Academic Journey (About Page)</label>
-              <textarea 
-                className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                rows="4" 
-                placeholder="Contoh: Saya adalah mahasiswa Hubungan Internasional yang sangat tertarik dengan kebijakan publik dan diplomasi..."
-                value={profileForm.academicJourney || ''} 
-                onChange={e => setProfileForm({...profileForm, academicJourney: e.target.value})} 
-              />
-            </div>
-
-            <div className="pt-4 flex justify-end">
-              <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
-                Save About Settings
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-10 border-t border-gray-100 dark:border-slate-800 pt-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Education</h2>
-              <button onClick={() => openModal('Education')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
-                <HiPlus /> Add Education
-              </button>
-            </div>
-            <div className="space-y-4 mb-10">
-              {filteredEducations.map(e => (
-                <div key={e.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-white m-0">{e.title}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{e.org} • {e.year}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => openModal('Education', e)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
-                    <button onClick={() => handleDelete('Education', e.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage My Values</h2>
-              <button onClick={() => openModal('Value')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
-                <HiPlus /> Add Value
-              </button>
-            </div>
-            <div className="space-y-4">
-              {filteredValues.map(v => (
-                <div key={v.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="text-2xl">{v.icon}</div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800 dark:text-white m-0">{v.title}</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{v.desc}</p>
+          {activeTab === 'Overview' && (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+              {dynamicStats.map(({ label, value, icon: Icon, color }) => (
+                <div key={label} className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:shadow-lavender-500/10 dark:hover:shadow-lavender-900/20 transition-all duration-300 group">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className={`w-11 h-11 rounded-xl bg-${color}-50 dark:bg-${color}-900/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon size={20} className={`text-${color}-500 dark:text-${color}-400`} />
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => openModal('Value', v)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
-                    <button onClick={() => handleDelete('Value', v.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
-                  </div>
+                  <p className="text-2xl font-bold text-gray-800 dark:text-white m-0 font-heading">{value}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 m-0 mt-1">{label}</p>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* TAB: PROJECTS */}
-      {activeTab === 'Projects' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Projects</h2>
-            <button onClick={() => openModal('Project')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
-              <HiPlus /> Add Project
-            </button>
-          </div>
-          <div className="space-y-4">
-            {filteredProjects.map(p => (
-              <div key={p.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white m-0">{p.title}</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{p.category}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => openModal('Project', p)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
-                  <button onClick={() => handleDelete('Project', p.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB: SKILLS */}
-      {activeTab === 'Skills' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Skills</h2>
-            <button onClick={() => openModal('Skill')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
-              <HiPlus /> Add Skill
-            </button>
-          </div>
-          <div className="space-y-4">
-            {filteredSkills.map(s => (
-              <div key={s.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white m-0">{s.name}</h3>
-                  <div className="w-64 sm:w-80 h-2 bg-gray-200 rounded-full mt-2"><div className="h-full bg-lavender-400 rounded-full" style={{ width: `${s.level}%` }}></div></div>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => openModal('Skill', s)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
-                  <button onClick={() => handleDelete('Skill', s.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB: EXPERIENCE */}
-      {activeTab === 'Experience' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Experience</h2>
-            <button onClick={() => openModal('Experience')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
-              <HiPlus /> Add Experience
-            </button>
-          </div>
-          <div className="space-y-4">
-            {filteredExperiences.map(e => (
-              <div key={e.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-                <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-white m-0">{e.title}</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{e.org} • {e.period}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => openModal('Experience', e)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
-                  <button onClick={() => handleDelete('Experience', e.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB: CONTACT */}
-      {activeTab === 'Contact' && (
-        <div className="space-y-8">
-          {/* Contact Settings */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-            <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
-              <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Contact Settings</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Update your contact info and social links.</p>
-            </div>
-            
-            <form onSubmit={handleProfileSave} className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Email</label>
-                  <input 
-                    type="email"
-                    placeholder="Contoh: email@contoh.com"
-                    className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                    value={profileForm.contactEmail || ''} 
-                    onChange={e => setProfileForm({...profileForm, contactEmail: e.target.value})} 
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Phone</label>
-                  <input 
-                    type="text"
-                    placeholder="Contoh: +62 812 3456 7890"
-                    className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                    value={profileForm.contactPhone || ''} 
-                    onChange={e => setProfileForm({...profileForm, contactPhone: e.target.value})} 
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Location</label>
-                  <input 
-                    type="text"
-                    placeholder="Contoh: Jakarta, Indonesia"
-                    className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                    value={profileForm.contactLocation || ''} 
-                    onChange={e => setProfileForm({...profileForm, contactLocation: e.target.value})} 
-                  />
-                </div>
+          {/* TAB: HOME */}
+          {activeTab === 'Home' && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
+              <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
+                <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Home Page Settings</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Manage your front page content and CV link.</p>
               </div>
 
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <label className="text-sm font-semibold text-gray-700">Social Links</label>
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      const links = Array.isArray(profileForm.socialLinks) ? [...profileForm.socialLinks] : []
-                      links.push({ name: '', url: '' })
-                      setProfileForm({...profileForm, socialLinks: links})
+              <form onSubmit={handleProfileSave} className="space-y-6">
+                <div>
+                  <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Home Photo</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full p-2 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                    onChange={async e => {
+                      const file = e.target.files[0]
+                      if (file) {
+                        try {
+                          const compressedBase64 = await compressImage(file)
+                          setProfileForm({ ...profileForm, homePhotoUrl: compressedBase64 })
+                        } catch (err) {
+                          Swal.fire({ title: 'Error', text: 'Failed to process image', icon: 'error' })
+                        }
+                      }
                     }}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-lavender-50 dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 rounded-lg text-xs font-semibold hover:bg-lavender-100 dark:hover:bg-slate-700 cursor-pointer border border-lavender-200 dark:border-slate-700 transition-colors"
-                  >
-                    <HiPlus size={14} /> Add Link
+                  />
+                  {profileForm.homePhotoUrl && <img src={profileForm.homePhotoUrl} alt="Preview" className="mt-3 h-20 rounded shadow-sm object-cover" />}
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6 mb-6">
+                  <div>
+                    <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Greeting</label>
+                    <input
+                      type="text"
+                      maxLength={20}
+                      placeholder="Contoh: Halo, saya"
+                      className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                      value={profileForm.homeGreeting || ''}
+                      onChange={e => setProfileForm({ ...profileForm, homeGreeting: e.target.value })}
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">Max 20 chars</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Name Highlight</label>
+                    <input
+                      type="text"
+                      maxLength={20}
+                      placeholder="Contoh: Shaffanadia"
+                      className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                      value={profileForm.homeNameHighlight || ''}
+                      onChange={e => setProfileForm({ ...profileForm, homeNameHighlight: e.target.value })}
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">Max 20 chars</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Name Subtitle</label>
+                    <input
+                      type="text"
+                      maxLength={30}
+                      placeholder="Contoh: Alfia Zahwah"
+                      className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                      value={profileForm.homeNameSub || ''}
+                      onChange={e => setProfileForm({ ...profileForm, homeNameSub: e.target.value })}
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">Max 30 chars</p>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Description</label>
+                  <textarea
+                    className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                    rows="3"
+                    maxLength={180}
+                    placeholder="Contoh: Mahasiswa Hubungan Internasional di FISIP, sangat tertarik dengan diplomasi global..."
+                    value={profileForm.homeDescription || ''}
+                    onChange={e => setProfileForm({ ...profileForm, homeDescription: e.target.value })}
+                  />
+                  <p className="text-[10px] text-gray-400 mt-1 text-right">Max 180 chars</p>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">CV / Resume Link (Google Drive, etc.)</label>
+                  <input
+                    type="url"
+                    placeholder="Contoh: https://drive.google.com/file/d/.../view"
+                    className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                    value={profileForm.cvLink || ''}
+                    onChange={e => setProfileForm({ ...profileForm, cvLink: e.target.value })}
+                  />
+                  <p className="text-[10px] text-gray-400 mt-1">Leave empty to hide the Download CV button</p>
+                </div>
+
+                <div className="pt-4 flex justify-end">
+                  <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
+                    Save Home Settings
                   </button>
                 </div>
-                {(Array.isArray(profileForm.socialLinks) ? profileForm.socialLinks : []).length === 0 && (
-                  <p className="text-xs text-gray-400 italic">No social links added yet. Click "Add Link" to get started.</p>
-                )}
-                <div className="space-y-3">
-                  {(Array.isArray(profileForm.socialLinks) ? profileForm.socialLinks : []).map((link, idx) => (
-                    <div key={idx} className="flex gap-3 items-start">
-                      <div className="flex-1">
-                        <input 
-                          type="text"
-                          placeholder="Contoh: Instagram, LinkedIn, WhatsApp"
-                          className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 dark:text-gray-200 transition-colors mb-2" 
-                          value={link.name || ''} 
-                          onChange={e => {
-                            const links = [...profileForm.socialLinks]
-                            links[idx] = { ...links[idx], name: e.target.value }
-                            setProfileForm({...profileForm, socialLinks: links})
-                          }} 
-                        />
-                        <input 
-                          type="url"
-                          placeholder="https://..."
-                          className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200" 
-                          value={link.url || ''} 
-                          onChange={e => {
-                            const links = [...profileForm.socialLinks]
-                            links[idx] = { ...links[idx], url: e.target.value }
-                            setProfileForm({...profileForm, socialLinks: links})
-                          }} 
-                        />
+              </form>
+            </div>
+          )}
+
+          {/* TAB: ABOUT */}
+          {activeTab === 'About' && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
+              <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
+                <h2 className="text-lg font-bold font-heading m-0 dark:text-white">About Page Settings</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Update your about photo and academic journey.</p>
+              </div>
+
+              <form onSubmit={handleProfileSave} className="space-y-6">
+                <div>
+                  <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">About Photo</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full p-2 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                    onChange={async e => {
+                      const file = e.target.files[0]
+                      if (file) {
+                        try {
+                          const compressedBase64 = await compressImage(file)
+                          setProfileForm({ ...profileForm, aboutPhotoUrl: compressedBase64 })
+                        } catch (err) {
+                          Swal.fire({ title: 'Error', text: 'Failed to process image', icon: 'error' })
+                        }
+                      }
+                    }}
+                  />
+                  {profileForm.aboutPhotoUrl && <img src={profileForm.aboutPhotoUrl} alt="Preview" className="mt-3 h-20 rounded shadow-sm object-cover" />}
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Academic Journey (About Page)</label>
+                  <textarea
+                    className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                    rows="4"
+                    placeholder="Contoh: Saya adalah mahasiswa Hubungan Internasional yang sangat tertarik dengan kebijakan publik dan diplomasi..."
+                    value={profileForm.academicJourney || ''}
+                    onChange={e => setProfileForm({ ...profileForm, academicJourney: e.target.value })}
+                  />
+                </div>
+
+                <div className="pt-4 flex justify-end">
+                  <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
+                    Save About Settings
+                  </button>
+                </div>
+              </form>
+
+              <div className="mt-10 border-t border-gray-100 dark:border-slate-800 pt-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Education</h2>
+                  <button onClick={() => openModal('Education')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+                    <HiPlus /> Add Education
+                  </button>
+                </div>
+                <div className="space-y-4 mb-10">
+                  {filteredEducations.map(e => (
+                    <div key={e.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <div>
+                        <h3 className="font-semibold text-gray-800 dark:text-white m-0">{e.title}</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{e.org} • {e.year}</p>
                       </div>
-                      <button 
-                        type="button"
-                        onClick={() => {
-                          const links = profileForm.socialLinks.filter((_, i) => i !== idx)
-                          setProfileForm({...profileForm, socialLinks: links})
-                        }}
-                        className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer mt-1"
-                      >
-                        <HiTrash size={14} />
-                      </button>
+                      <div className="flex gap-2">
+                        <button onClick={() => openModal('Education', e)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
+                        <button onClick={() => handleDelete('Education', e.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage My Values</h2>
+                  <button onClick={() => openModal('Value')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+                    <HiPlus /> Add Value
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {filteredValues.map(v => (
+                    <div key={v.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="text-2xl">{v.icon}</div>
+                        <div>
+                          <h3 className="font-semibold text-gray-800 dark:text-white m-0">{v.title}</h3>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{v.desc}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => openModal('Value', v)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
+                        <button onClick={() => handleDelete('Value', v.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
+            </div>
+          )}
 
-              <div className="pt-4 flex justify-end">
-                <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
-                  Save Contact Settings
+          {/* TAB: PROJECTS */}
+          {activeTab === 'Projects' && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Projects</h2>
+                <button onClick={() => openModal('Project')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+                  <HiPlus /> Add Project
                 </button>
               </div>
-            </form>
-          </div>
-
-          {/* Message Inbox */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-            <div className="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
-              <div>
-                <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Message Inbox</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">{messages.length} message{messages.length !== 1 ? 's' : ''} received</p>
-              </div>
-            </div>
-            {filteredMessages.length === 0 ? (
-              <div className="text-center py-12">
-                <HiOutlineMail size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-                <p className="text-gray-400 dark:text-gray-500 m-0">{messages.length === 0 ? 'No messages yet' : 'No messages match your search'}</p>
-              </div>
-            ) : (
               <div className="space-y-4">
-                {filteredMessages.map(msg => (
-                  <div key={msg.id} className={`p-5 border rounded-xl transition-colors ${msg.read ? 'border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/80 shadow-sm' : 'border-lavender-300 dark:border-lavender-500/50 bg-lavender-50 dark:bg-lavender-900/30 shadow-md shadow-lavender-200/50 dark:shadow-lavender-900/20'}`}>
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="font-semibold text-gray-800 dark:text-white m-0 text-sm">{msg.subject}</h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">
-                          From: <span className="font-medium text-gray-700 dark:text-gray-200">{msg.name}</span> ({msg.email})
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-gray-400">
-                          {msg.createdAt ? new Date(msg.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
-                        </span>
-                        {!msg.read && <span className="w-2 h-2 rounded-full bg-lavender-500" />}
-                        <button onClick={() => handleDelete('Message', msg.id)} className="p-1.5 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer">
-                          <HiTrash size={14} />
-                        </button>
-                      </div>
+                {filteredProjects.map(p => (
+                  <div key={p.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <div>
+                      <h3 className="font-semibold text-gray-800 dark:text-white m-0">{p.title}</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{p.category}</p>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 m-0 leading-relaxed whitespace-pre-line">{msg.message}</p>
+                    <div className="flex gap-2">
+                      <button onClick={() => openModal('Project', p)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
+                      <button onClick={() => handleDelete('Project', p.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
+                    </div>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        </div>
-      )}
+            </div>
+          )}
+
+          {/* TAB: SKILLS */}
+          {activeTab === 'Skills' && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Skills</h2>
+                <button onClick={() => openModal('Skill')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+                  <HiPlus /> Add Skill
+                </button>
+              </div>
+              <div className="space-y-4">
+                {filteredSkills.map(s => (
+                  <div key={s.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <div>
+                      <h3 className="font-semibold text-gray-800 dark:text-white m-0">{s.name}</h3>
+                      <div className="w-64 sm:w-80 h-2 bg-gray-200 rounded-full mt-2"><div className="h-full bg-lavender-400 rounded-full" style={{ width: `${s.level}%` }}></div></div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => openModal('Skill', s)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
+                      <button onClick={() => handleDelete('Skill', s.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: EXPERIENCE */}
+          {activeTab === 'Experience' && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Experience</h2>
+                <button onClick={() => openModal('Experience')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
+                  <HiPlus /> Add Experience
+                </button>
+              </div>
+              <div className="space-y-4">
+                {filteredExperiences.map(e => (
+                  <div key={e.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <div>
+                      <h3 className="font-semibold text-gray-800 dark:text-white m-0">{e.title}</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">{e.org} • {e.period}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => openModal('Experience', e)} className="p-2 text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900/50 border-none cursor-pointer"><HiPencil /></button>
+                      <button onClick={() => handleDelete('Experience', e.id)} className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer"><HiTrash /></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: CONTACT */}
+          {activeTab === 'Contact' && (
+            <div className="space-y-8">
+              {/* Contact Settings */}
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
+                <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
+                  <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Contact Settings</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Update your contact info and social links.</p>
+                </div>
+
+                <form onSubmit={handleProfileSave} className="space-y-6">
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Email</label>
+                      <input
+                        type="email"
+                        placeholder="Contoh: email@contoh.com"
+                        className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                        value={profileForm.contactEmail || ''}
+                        onChange={e => setProfileForm({ ...profileForm, contactEmail: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Phone</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: +62 812 3456 7890"
+                        className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                        value={profileForm.contactPhone || ''}
+                        onChange={e => setProfileForm({ ...profileForm, contactPhone: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Location</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Jakarta, Indonesia"
+                        className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                        value={profileForm.contactLocation || ''}
+                        onChange={e => setProfileForm({ ...profileForm, contactLocation: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100 dark:border-slate-800">
+                    <h3 className="text-md font-semibold font-heading mb-4 dark:text-white">Telegram Integration</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Set these to receive contact form messages directly in your Telegram.</p>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Bot Token</label>
+                        <input
+                          type="password"
+                          placeholder="e.g. 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+                          className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                          value={profileForm.telegramBotToken || ''}
+                          onChange={e => setProfileForm({ ...profileForm, telegramBotToken: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm font-semibold block mb-2 text-gray-700 dark:text-gray-300">Chat ID</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 123456789"
+                          className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                          value={profileForm.telegramChatId || ''}
+                          onChange={e => setProfileForm({ ...profileForm, telegramChatId: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-3">
+                      <label className="text-sm font-semibold text-gray-700">Social Links</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const links = Array.isArray(profileForm.socialLinks) ? [...profileForm.socialLinks] : []
+                          links.push({ name: '', url: '' })
+                          setProfileForm({ ...profileForm, socialLinks: links })
+                        }}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-lavender-50 dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 rounded-lg text-xs font-semibold hover:bg-lavender-100 dark:hover:bg-slate-700 cursor-pointer border border-lavender-200 dark:border-slate-700 transition-colors"
+                      >
+                        <HiPlus size={14} /> Add Link
+                      </button>
+                    </div>
+                    {(Array.isArray(profileForm.socialLinks) ? profileForm.socialLinks : []).length === 0 && (
+                      <p className="text-xs text-gray-400 italic">No social links added yet. Click "Add Link" to get started.</p>
+                    )}
+                    <div className="space-y-3">
+                      {(Array.isArray(profileForm.socialLinks) ? profileForm.socialLinks : []).map((link, idx) => (
+                        <div key={idx} className="flex gap-3 items-start">
+                          <div className="flex-1">
+                            <input
+                              type="text"
+                              placeholder="Contoh: Instagram, LinkedIn, WhatsApp"
+                              className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 dark:text-gray-200 transition-colors mb-2"
+                              value={link.name || ''}
+                              onChange={e => {
+                                const links = [...profileForm.socialLinks]
+                                links[idx] = { ...links[idx], name: e.target.value }
+                                setProfileForm({ ...profileForm, socialLinks: links })
+                              }}
+                            />
+                            <input
+                              type="url"
+                              placeholder="https://..."
+                              className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 transition-colors dark:text-gray-200"
+                              value={link.url || ''}
+                              onChange={e => {
+                                const links = [...profileForm.socialLinks]
+                                links[idx] = { ...links[idx], url: e.target.value }
+                                setProfileForm({ ...profileForm, socialLinks: links })
+                              }}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const links = profileForm.socialLinks.filter((_, i) => i !== idx)
+                              setProfileForm({ ...profileForm, socialLinks: links })
+                            }}
+                            className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer mt-1"
+                          >
+                            <HiTrash size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex justify-end">
+                    <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
+                      Save Contact Settings
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Message Inbox */}
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
+                  <div>
+                    <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Message Inbox</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">{messages.length} message{messages.length !== 1 ? 's' : ''} received</p>
+                  </div>
+                  {filteredMessages.length > 0 && (
+                    <div className="flex items-center gap-4">
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-lavender-500 transition-colors">
+                        <input 
+                          type="checkbox" 
+                          className="w-4 h-4 rounded border-gray-300 text-lavender-500 focus:ring-lavender-500 cursor-pointer"
+                          checked={selectedMessages.length === filteredMessages.length && filteredMessages.length > 0}
+                          onChange={(e) => {
+                            if (e.target.checked) setSelectedMessages(filteredMessages.map(m => m.id))
+                            else setSelectedMessages([])
+                          }}
+                        />
+                        Select All
+                      </label>
+                      {selectedMessages.length > 0 && (
+                        <button onClick={handleBulkDelete} className="px-3 py-1.5 bg-blush-50 text-blush-600 hover:bg-blush-100 dark:bg-blush-900/30 dark:text-blush-400 dark:hover:bg-blush-900/50 rounded-lg text-sm font-semibold transition-colors border-none cursor-pointer flex items-center gap-1">
+                          <HiTrash size={14} /> Delete Selected ({selectedMessages.length})
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {filteredMessages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <HiOutlineMail size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+                    <p className="text-gray-400 dark:text-gray-500 m-0">{messages.length === 0 ? 'No messages yet' : 'No messages match your search'}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredMessages.map(msg => (
+                      <div key={msg.id} className={`p-5 border rounded-xl transition-colors ${msg.read ? 'border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/80 shadow-sm' : 'border-lavender-300 dark:border-lavender-500/50 bg-lavender-50 dark:bg-lavender-900/30 shadow-md shadow-lavender-200/50 dark:shadow-lavender-900/20'}`}>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 gap-3">
+                          <div className="flex gap-3">
+                            <input 
+                              type="checkbox"
+                              className="mt-1 w-4 h-4 rounded border-gray-300 text-lavender-500 focus:ring-lavender-500 cursor-pointer flex-shrink-0"
+                              checked={selectedMessages.includes(msg.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) setSelectedMessages([...selectedMessages, msg.id])
+                                else setSelectedMessages(selectedMessages.filter(id => id !== msg.id))
+                              }}
+                            />
+                            <div>
+                              <h3 className="font-semibold text-gray-800 dark:text-white m-0 text-sm">{msg.subject}</h3>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mt-1">
+                                From: <span className="font-medium text-gray-700 dark:text-gray-200">{msg.name}</span> ({msg.email})
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-end w-full sm:w-auto gap-2">
+                            <span className="text-[10px] text-gray-400">
+                              {msg.createdAt ? new Date(msg.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                            </span>
+                            {!msg.read && (
+                              <button onClick={async () => {
+                                await updateItem('messages', msg.id, { read: true });
+                                refreshData();
+                              }} title="Mark as read" className="p-1.5 text-lavender-600 dark:text-lavender-400 bg-lavender-50 dark:bg-lavender-900/30 rounded-lg hover:bg-lavender-100 dark:hover:bg-lavender-900/50 border-none cursor-pointer flex-shrink-0">
+                                <HiOutlineCheckCircle size={14} />
+                              </button>
+                            )}
+                            <button onClick={() => handleDelete('Message', msg.id)} className="p-1.5 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer flex-shrink-0">
+                              <HiTrash size={14} />
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 m-0 leading-relaxed whitespace-pre-line sm:pl-7">{msg.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
 
         </>
@@ -755,82 +998,82 @@ export default function AdminDashboard() {
               </h2>
               <button onClick={closeModal} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-transparent border-none cursor-pointer"><HiX size={20} /></button>
             </div>
-            
+
             <form onSubmit={handleSave} className="p-6 space-y-4">
-              
+
               {/* Project Fields */}
               {modalType === 'Project' && (
                 <>
                   <div>
                     <label className="text-sm font-semibold block mb-1 dark:text-gray-300">Project Image</label>
-                    <input 
+                    <input
                       type="file"
                       accept="image/*"
-                      className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" 
+                      className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white"
                       onChange={async e => {
                         const file = e.target.files[0]
                         if (file) {
                           try {
                             const compressedBase64 = await compressImage(file)
-                            setFormData({...formData, image: compressedBase64})
+                            setFormData({ ...formData, image: compressedBase64 })
                           } catch (err) {
                             Swal.fire({ title: 'Error', text: 'Failed to process image', icon: 'error' })
                           }
                         }
-                      }} 
+                      }}
                     />
                     {formData.image && <img src={formData.image} alt="Preview" className="mt-2 h-16 rounded object-cover" />}
                   </div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Emoji (Fallback if no image)</label><input className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" placeholder="e.g. 🌍" value={formData.emoji || ''} onChange={e => setFormData({...formData, emoji: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Title</label><input required placeholder="Contoh: Peran Indonesia di KTT G20" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Category</label><input required placeholder="Contoh: Penelitian & Diplomasi" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.category || ''} onChange={e => setFormData({...formData, category: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Description</label><textarea required placeholder="Contoh: Analisis komprehensif mengenai kebijakan luar negeri Indonesia pada KTT G20 di Bali." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="3" value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Tags (comma separated)</label><input placeholder="Contoh: Kebijakan, G20, Indonesia" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : (formData.tags || '')} onChange={e => setFormData({...formData, tags: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Primary Link / Document URL (Optional)</label><input type="url" placeholder="https://..." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.liveUrl || ''} onChange={e => setFormData({...formData, liveUrl: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Secondary / Reference URL (Optional)</label><input type="url" placeholder="https://..." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.repoUrl || ''} onChange={e => setFormData({...formData, repoUrl: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Emoji (Fallback if no image)</label><input className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" placeholder="e.g. 🌍" value={formData.emoji || ''} onChange={e => setFormData({ ...formData, emoji: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Title</label><input required placeholder="Contoh: Peran Indonesia di KTT G20" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.title || ''} onChange={e => setFormData({ ...formData, title: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Category</label><input required placeholder="Contoh: Penelitian & Diplomasi" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.category || ''} onChange={e => setFormData({ ...formData, category: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Description</label><textarea required placeholder="Contoh: Analisis komprehensif mengenai kebijakan luar negeri Indonesia pada KTT G20 di Bali." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="3" value={formData.description || ''} onChange={e => setFormData({ ...formData, description: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Tags (comma separated)</label><input placeholder="Contoh: Kebijakan, G20, Indonesia" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={Array.isArray(formData.tags) ? formData.tags.join(', ') : (formData.tags || '')} onChange={e => setFormData({ ...formData, tags: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Primary Link / Document URL (Optional)</label><input type="url" placeholder="https://..." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.liveUrl || ''} onChange={e => setFormData({ ...formData, liveUrl: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Secondary / Reference URL (Optional)</label><input type="url" placeholder="https://..." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.repoUrl || ''} onChange={e => setFormData({ ...formData, repoUrl: e.target.value })} /></div>
                 </>
               )}
 
               {/* Skill Fields */}
               {modalType === 'Skill' && (
                 <>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Skill Name</label><input required placeholder="Contoh: Public Speaking" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Level (0-100)</label><input type="number" min="0" max="100" required placeholder="Contoh: 85" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.level || 50} onChange={e => setFormData({...formData, level: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Skill Name</label><input required placeholder="Contoh: Public Speaking" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Level (0-100)</label><input type="number" min="0" max="100" required placeholder="Contoh: 85" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.level || 50} onChange={e => setFormData({ ...formData, level: e.target.value })} /></div>
                 </>
               )}
 
               {/* Experience Fields */}
               {modalType === 'Experience' && (
                 <>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Title / Role</label><input required placeholder="Contoh: Delegasi Indonesia" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Organization</label><input required placeholder="Contoh: Model United Nations (MUN) UI" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.org || ''} onChange={e => setFormData({...formData, org: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Period</label><input required placeholder="Contoh: 2024 – Sekarang" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.period || ''} onChange={e => setFormData({...formData, period: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Location</label><input placeholder="Contoh: Jakarta, Indonesia" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.location || ''} onChange={e => setFormData({...formData, location: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Type</label><input placeholder="Contoh: Kepemimpinan" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.type || ''} onChange={e => setFormData({...formData, type: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Description</label><textarea required placeholder="Contoh: Mewakili Indonesia dalam simulasi Dewan Keamanan PBB..." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="2" value={formData.desc || ''} onChange={e => setFormData({...formData, desc: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Achievements (1 per line)</label><textarea placeholder="Contoh: Penghargaan Delegasi Terbaik Indonesia&#10;Menginisiasi resolusi keamanan Asia Tenggara" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="4" value={Array.isArray(formData.achievements) ? formData.achievements.join('\n') : (formData.achievements || '')} onChange={e => setFormData({...formData, achievements: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Title / Role</label><input required placeholder="Contoh: Delegasi Indonesia" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.title || ''} onChange={e => setFormData({ ...formData, title: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Organization</label><input required placeholder="Contoh: Model United Nations (MUN) UI" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.org || ''} onChange={e => setFormData({ ...formData, org: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Period</label><input required placeholder="Contoh: 2024 – Sekarang" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.period || ''} onChange={e => setFormData({ ...formData, period: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Location</label><input placeholder="Contoh: Jakarta, Indonesia" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.location || ''} onChange={e => setFormData({ ...formData, location: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Type</label><input placeholder="Contoh: Kepemimpinan" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.type || ''} onChange={e => setFormData({ ...formData, type: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Description</label><textarea required placeholder="Contoh: Mewakili Indonesia dalam simulasi Dewan Keamanan PBB..." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="2" value={formData.desc || ''} onChange={e => setFormData({ ...formData, desc: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Achievements (1 per line)</label><textarea placeholder="Contoh: Penghargaan Delegasi Terbaik Indonesia&#10;Menginisiasi resolusi keamanan Asia Tenggara" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="4" value={Array.isArray(formData.achievements) ? formData.achievements.join('\n') : (formData.achievements || '')} onChange={e => setFormData({ ...formData, achievements: e.target.value })} /></div>
                 </>
               )}
 
               {/* Education Fields */}
               {modalType === 'Education' && (
                 <>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Year / Period</label><input required placeholder="Contoh: 2023 – 2027" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.year || ''} onChange={e => setFormData({...formData, year: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Degree / Title</label><input required placeholder="Contoh: Sarjana Hubungan Internasional" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Institution</label><input required placeholder="Contoh: Universitas Indonesia" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.org || ''} onChange={e => setFormData({...formData, org: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Description</label><textarea required placeholder="Contoh: Fokus pada diplomasi Asia Tenggara dan keamanan internasional." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="3" value={formData.desc || ''} onChange={e => setFormData({...formData, desc: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Year / Period</label><input required placeholder="Contoh: 2023 – 2027" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.year || ''} onChange={e => setFormData({ ...formData, year: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Degree / Title</label><input required placeholder="Contoh: Sarjana Hubungan Internasional" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.title || ''} onChange={e => setFormData({ ...formData, title: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Institution</label><input required placeholder="Contoh: Universitas Indonesia" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.org || ''} onChange={e => setFormData({ ...formData, org: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Description</label><textarea required placeholder="Contoh: Fokus pada diplomasi Asia Tenggara dan keamanan internasional." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="3" value={formData.desc || ''} onChange={e => setFormData({ ...formData, desc: e.target.value })} /></div>
                 </>
               )}
 
               {/* Value Fields */}
               {modalType === 'Value' && (
                 <>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Icon (Emoji or text)</label><input required placeholder="Contoh: 🌏" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.icon || ''} onChange={e => setFormData({...formData, icon: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Title</label><input required placeholder="Contoh: Diplomasi & Kebijakan" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.title || ''} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
-                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Description</label><textarea required placeholder="Contoh: Mengeksplorasi kerangka kebijakan internasional..." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="3" value={formData.desc || ''} onChange={e => setFormData({...formData, desc: e.target.value})} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Icon (Emoji or text)</label><input required placeholder="Contoh: 🌏" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.icon || ''} onChange={e => setFormData({ ...formData, icon: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Title</label><input required placeholder="Contoh: Diplomasi & Kebijakan" className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.title || ''} onChange={e => setFormData({ ...formData, title: e.target.value })} /></div>
+                  <div><label className="text-sm font-semibold block mb-1 dark:text-gray-300">Description</label><textarea required placeholder="Contoh: Mengeksplorasi kerangka kebijakan internasional..." className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" rows="3" value={formData.desc || ''} onChange={e => setFormData({ ...formData, desc: e.target.value })} /></div>
                   <div>
                     <label className="text-sm font-semibold block mb-1 dark:text-gray-300">Theme Color</label>
-                    <select className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.color || 'lavender'} onChange={e => setFormData({...formData, color: e.target.value})}>
+                    <select className="w-full p-2 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white" value={formData.color || 'lavender'} onChange={e => setFormData({ ...formData, color: e.target.value })}>
                       <option value="lavender">Lavender</option>
                       <option value="teal">Teal</option>
                       <option value="blush">Blush</option>

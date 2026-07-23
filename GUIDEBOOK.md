@@ -26,7 +26,7 @@ Di dalam Dashboard ini, terdapat beberapa **Tab Menu**:
 - **Projects:** Menambah portofolio pekerjaan atau tugas Anda.
 - **Skills:** Mengisi daftar keahlian beserta persentasenya.
 - **Experience:** Mencatat riwayat kepanitiaan, kepemimpinan, dan organisasi.
-- **Contact:** Mengatur email, nomor telepon, dan link media sosial Anda (Instagram, LinkedIn, dll).
+- **Contact:** Mengatur email, nomor telepon, link media sosial Anda, mengatur Chat ID Telegram, serta membaca pesan masuk (Message Inbox).
 
 ---
 
@@ -74,6 +74,32 @@ Jika Anda merasa ada data, pengalaman, atau proyek yang sudah tidak relevan dan 
 3. Akan muncul peringatan: *"Are you sure?"*
 4. Klik tombol **Yes, delete it!**.
 5. Data tersebut akan terhapus secara permanen dari website Anda.
+
+---
+## 📩 7. Cara Mengecek dan Mengelola Pesan Masuk (Inbox)
+Setiap kali ada pengunjung website yang mengisi form kontak, pesan tersebut akan otomatis tersimpan ke dalam **Message Inbox** Anda.
+
+1. Buka menu **Contact** di Dashboard.
+2. Gulir ke bawah hingga Anda melihat bagian **Message Inbox**.
+3. Di sini Anda bisa melihat daftar pesan, dari siapa, beserta cuplikan isinya.
+4. **Tandai Sudah Dibaca:** Klik tombol centang (`✓`) hijau untuk menandai pesan sudah dibaca (warna baris pesan akan berubah redup).
+5. **Hapus Pesan:** Klik tombol ikon tempat sampah (`🗑️`) berwarna merah muda untuk menghapus satu pesan.
+6. **Hapus Massal (Bulk Delete):** Jika Anda ingin menghapus banyak pesan, Anda bisa mencentang kotak (*checkbox*) di beberapa pesan sekaligus (atau klik **Select All** untuk memilih semua pesan). Setelah itu, klik tombol merah **Delete Selected** yang muncul di atas kotak masuk.
+
+---
+
+## 🔔 8. Sistem Notifikasi & Privasi Telegram
+Website Anda dilengkapi dengan sistem asisten pintar dan lonceng notifikasi.
+
+- **Lonceng Notifikasi & Popup Pintar:**
+  - Jika ada pesan baru, akan muncul angka berwarna merah muda di pojok kanan atas layar Anda (pada ikon lonceng).
+  - Jika Anda membuka Dashboard, atau **mengklik ikon lonceng** tersebut kapan saja, sebuah *popup notifikasi* akan muncul di pojok kanan atas.
+  - Popup ini akan menampilkan informasi jumlah pesan baru dan memberikan *spill* (cuplikan) dari **3 pesan terbaru** Anda!
+  - Anda bisa klik tombol **Mark All Read** di popup untuk membersihkan notifikasi, tombol **Dismiss** untuk menutup sementara, atau tanda silang `X` di sudut popup.
+  
+- **Privasi Pesan Telegram 100% Aman:**
+  - Saat pengunjung mengisi form kontak, pesannya akan dikirimkan otomatis oleh sistem ke Telegram Anda menggunakan **Chat ID** pribadi yang Anda isi di pengaturan Contact.
+  - Hal ini menjamin privasi Anda. Klien/pengunjung tidak akan bisa melihat pesan masuk dari orang lain, karena bot Telegram hanya beroperasi **satu arah** (sebagai kurir eksklusif menuju akun Telegram Anda saja).
 
 ---
 

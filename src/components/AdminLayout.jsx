@@ -65,7 +65,10 @@ export default function AdminLayout() {
             >
               {isDarkMode ? <HiOutlineSun size={20} /> : <HiOutlineMoon size={20} />}
             </button>
-            <button className="relative p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-lavender-500 dark:hover:text-lavender-300 hover:bg-lavender-50 dark:hover:bg-slate-800 border-none bg-transparent cursor-pointer transition-colors" onClick={() => setSearchParams({ tab: 'Contact' })}>
+            <button className="relative p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-lavender-500 dark:hover:text-lavender-300 hover:bg-lavender-50 dark:hover:bg-slate-800 border-none bg-transparent cursor-pointer transition-colors" onClick={() => {
+              setSearchParams({ tab: 'Contact' });
+              window.dispatchEvent(new CustomEvent('trigger-notification'));
+            }}>
               <HiOutlineBell size={20} />
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-4 h-4 bg-blush-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">

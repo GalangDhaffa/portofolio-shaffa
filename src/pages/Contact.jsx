@@ -57,6 +57,23 @@ export default function Contact() {
         createdAt: new Date().toISOString(),
         read: false
       })
+
+      if (profile.telegramBotToken && profile.telegramChatId) {
+        const text = `New Contact Message:\n\nName: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`
+        try {
+          await fetch(`https://api.telegram.org/bot${profile.telegramBotToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: profile.telegramChatId,
+              text: text
+            })
+          })
+        } catch (tgError) {
+          console.error("Failed to send to Telegram:", tgError)
+        }
+      }
+
       setSubmitted(true)
       setTimeout(() => setSubmitted(false), 4000)
       setFormData({ name: '', email: '', subject: '', message: '' })

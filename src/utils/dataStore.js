@@ -115,6 +115,8 @@ export const initialData = {
     contactEmail: "shaffanadia.alfia@university.ac.id",
     contactPhone: "+62 812 XXXX XXXX",
     contactLocation: "Indonesia",
+    telegramBotToken: "",
+    telegramChatId: "",
     socialLinks: []
   }
 }
