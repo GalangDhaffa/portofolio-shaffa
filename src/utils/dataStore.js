@@ -142,8 +142,6 @@ export const initializeDB = async () => {
     await setDoc(statsRef, { views_count: 0 })
     console.log("Database initialized successfully!")
   }
-  
-  await incrementViews()
 }
 
 export const getProfile = async () => {

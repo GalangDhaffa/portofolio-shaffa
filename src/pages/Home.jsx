@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { FiArrowRight, FiDownload, FiMapPin, FiBookOpen } from 'react-icons/fi'
 import { HiOutlineSparkles } from 'react-icons/hi'
-import { getItems, getProfile } from '../utils/dataStore'
+import { getItems, getProfile, incrementViews } from '../utils/dataStore'
 import SectionHeading from '../components/SectionHeading'
 
 export default function Home() {
@@ -11,8 +11,15 @@ export default function Home() {
   const [skills, setSkills] = useState([])
   const [values, setValues] = useState([])
   const [profile, setProfile] = useState({})
+  
+  const hasIncrementedView = useRef(false)
 
   useEffect(() => {
+    if (!hasIncrementedView.current) {
+      incrementViews().catch(console.error)
+      hasIncrementedView.current = true
+    }
+    
     const fetchData = async () => {
       try {
         const [proj, exp, skl, val, prof] = await Promise.all([
