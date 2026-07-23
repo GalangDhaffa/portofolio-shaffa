@@ -88,7 +88,7 @@ export default function Contact() {
         <div className="absolute top-10 right-10 w-48 h-48 bg-blush-200/20 rounded-full blur-3xl" />
         <div className="absolute bottom-10 left-10 w-64 h-64 bg-lavender-200/15 rounded-full blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-blush-50 dark:bg-slate-800 text-blush-600 dark:text-blush-400 text-xs font-semibold uppercase tracking-widest mb-4 border border-blush-200 dark:border-slate-700">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-lavender-50 dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 text-xs font-semibold uppercase tracking-widest mb-4 border border-lavender-100 dark:border-slate-700">
             Contact Me
           </span>
           <h1 className="text-3xl md:text-5xl font-bold font-heading text-gray-800 dark:text-white mb-4 animate-fade-in-up">
@@ -249,7 +249,7 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={sending}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm border-none cursor-pointer shadow-lg shadow-lavender-200 hover:shadow-xl hover:shadow-lavender-300 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm border-none cursor-pointer shadow-md shadow-lavender-500/20 dark:shadow-none hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lg dark:hover:shadow-lavender-900/40 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {sending ? (
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

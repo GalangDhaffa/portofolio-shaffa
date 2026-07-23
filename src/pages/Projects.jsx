@@ -39,7 +39,7 @@ export default function Projects() {
         <div className="absolute top-10 left-10 w-56 h-56 bg-gold-200/20 rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-lavender-200/15 rounded-full blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-gold-50 dark:bg-slate-800 text-gold-600 dark:text-gold-400 text-xs font-semibold uppercase tracking-widest mb-4 border border-gold-200 dark:border-slate-700">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-lavender-50 dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 text-xs font-semibold uppercase tracking-widest mb-4 border border-lavender-100 dark:border-slate-700">
             Projects & Research
           </span>
           <h1 className="text-3xl md:text-5xl font-bold font-heading text-gray-800 dark:text-white mb-4 animate-fade-in-up">
@@ -65,7 +65,7 @@ export default function Projects() {
                   onClick={() => setActiveCategory(cat)}
                   className={`px-4 py-2 rounded-full text-sm font-medium border-none cursor-pointer transition-all duration-300 ${
                     activeCategory === cat
-                      ? 'bg-lavender-500 text-white shadow-md shadow-lavender-200 dark:shadow-none'
+                      ? 'bg-lavender-500 text-white shadow-md shadow-lavender-500/20 dark:shadow-none'
                       : 'bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-lavender-50 dark:hover:bg-slate-700 hover:text-lavender-600 dark:hover:text-lavender-300'
                   }`}
                 >

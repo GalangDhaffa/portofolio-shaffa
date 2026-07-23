@@ -58,6 +58,7 @@ const compressImage = (file) => {
 export default function AdminDashboard() {
   const [searchParams, setSearchParams] = useSearchParams()
   const activeTab = searchParams.get('tab') || 'Overview'
+  const searchQuery = searchParams.get('q') || ''
 
   const [projects, setProjects] = useState([])
   const [skills, setSkills] = useState([])
@@ -83,6 +84,13 @@ export default function AdminDashboard() {
     { label: 'Experiences', value: experiences.length, icon: HiOutlineUser, color: 'gold' },
     { label: 'Total Views', value: views.toLocaleString(), icon: HiOutlineEye, color: 'blush' },
   ]
+
+  const filteredProjects = projects.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.category.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredSkills = skills.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredExperiences = experiences.filter(e => e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.org.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredEducations = educations.filter(e => e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.org.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredValues = values.filter(v => v.title.toLowerCase().includes(searchQuery.toLowerCase()) || v.desc.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredMessages = messages.filter(m => (m.subject && m.subject.toLowerCase().includes(searchQuery.toLowerCase())) || (m.message && m.message.toLowerCase().includes(searchQuery.toLowerCase())) || (m.name && m.name.toLowerCase().includes(searchQuery.toLowerCase())))
 
   useEffect(() => {
     refreshData()
@@ -287,7 +295,7 @@ export default function AdminDashboard() {
       {activeTab === 'Overview' && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           {dynamicStats.map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-md transition-all duration-300 group">
+            <div key={label} className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:shadow-lavender-500/10 dark:hover:shadow-lavender-900/20 transition-all duration-300 group">
               <div className="flex items-start justify-between mb-3">
                 <div className={`w-11 h-11 rounded-xl bg-${color}-50 dark:bg-${color}-900/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
                   <Icon size={20} className={`text-${color}-500 dark:text-${color}-400`} />
@@ -303,7 +311,7 @@ export default function AdminDashboard() {
       {/* TAB: HOME */}
       {activeTab === 'Home' && (
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-          <div className="mb-6 border-b border-gray-100 pb-4">
+          <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
             <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Home Page Settings</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Manage your front page content and CV link.</p>
           </div>
@@ -395,7 +403,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="pt-4 flex justify-end">
-              <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-200 hover:shadow-lg hover:-translate-y-0.5">
+              <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
                 Save Home Settings
               </button>
             </div>
@@ -406,7 +414,7 @@ export default function AdminDashboard() {
       {/* TAB: ABOUT */}
       {activeTab === 'About' && (
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-          <div className="mb-6 border-b border-gray-100 pb-4">
+          <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
             <h2 className="text-lg font-bold font-heading m-0 dark:text-white">About Page Settings</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Update your about photo and academic journey.</p>
           </div>
@@ -445,13 +453,13 @@ export default function AdminDashboard() {
             </div>
 
             <div className="pt-4 flex justify-end">
-              <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-200 hover:shadow-lg hover:-translate-y-0.5">
+              <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
                 Save About Settings
               </button>
             </div>
           </form>
 
-          <div className="mt-10 border-t border-gray-100 pt-8">
+          <div className="mt-10 border-t border-gray-100 dark:border-slate-800 pt-8">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Manage Education</h2>
               <button onClick={() => openModal('Education')} className="flex items-center gap-2 px-4 py-2 bg-lavender-500 text-white rounded-lg text-sm font-semibold hover:bg-lavender-600 cursor-pointer border-none transition-colors">
@@ -459,7 +467,7 @@ export default function AdminDashboard() {
               </button>
             </div>
             <div className="space-y-4 mb-10">
-              {educations.map(e => (
+              {filteredEducations.map(e => (
                 <div key={e.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                   <div>
                     <h3 className="font-semibold text-gray-800 dark:text-white m-0">{e.title}</h3>
@@ -480,7 +488,7 @@ export default function AdminDashboard() {
               </button>
             </div>
             <div className="space-y-4">
-              {values.map(v => (
+              {filteredValues.map(v => (
                 <div key={v.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="text-2xl">{v.icon}</div>
@@ -510,7 +518,7 @@ export default function AdminDashboard() {
             </button>
           </div>
           <div className="space-y-4">
-            {projects.map(p => (
+            {filteredProjects.map(p => (
               <div key={p.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-white m-0">{p.title}</h3>
@@ -536,7 +544,7 @@ export default function AdminDashboard() {
             </button>
           </div>
           <div className="space-y-4">
-            {skills.map(s => (
+            {filteredSkills.map(s => (
               <div key={s.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-white m-0">{s.name}</h3>
@@ -562,7 +570,7 @@ export default function AdminDashboard() {
             </button>
           </div>
           <div className="space-y-4">
-            {experiences.map(e => (
+            {filteredExperiences.map(e => (
               <div key={e.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border border-gray-100 dark:border-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                 <div>
                   <h3 className="font-semibold text-gray-800 dark:text-white m-0">{e.title}</h3>
@@ -583,7 +591,7 @@ export default function AdminDashboard() {
         <div className="space-y-8">
           {/* Contact Settings */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-            <div className="mb-6 border-b border-gray-100 pb-4">
+            <div className="mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
               <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Contact Settings</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">Update your contact info and social links.</p>
             </div>
@@ -632,7 +640,7 @@ export default function AdminDashboard() {
                       links.push({ name: '', url: '' })
                       setProfileForm({...profileForm, socialLinks: links})
                     }}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-lavender-50 text-lavender-600 rounded-lg text-xs font-semibold hover:bg-lavender-100 cursor-pointer border border-lavender-200 transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 bg-lavender-50 dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 rounded-lg text-xs font-semibold hover:bg-lavender-100 dark:hover:bg-slate-700 cursor-pointer border border-lavender-200 dark:border-slate-700 transition-colors"
                   >
                     <HiPlus size={14} /> Add Link
                   </button>
@@ -647,7 +655,7 @@ export default function AdminDashboard() {
                         <input 
                           type="text"
                           placeholder="Contoh: Instagram, LinkedIn, WhatsApp"
-                          className="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:bg-white transition-colors mb-2" 
+                          className="w-full p-2.5 border border-gray-200 dark:border-slate-700 rounded-lg text-sm bg-gray-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 dark:text-gray-200 transition-colors mb-2" 
                           value={link.name || ''} 
                           onChange={e => {
                             const links = [...profileForm.socialLinks]
@@ -673,7 +681,7 @@ export default function AdminDashboard() {
                           const links = profileForm.socialLinks.filter((_, i) => i !== idx)
                           setProfileForm({...profileForm, socialLinks: links})
                         }}
-                        className="p-2 text-blush-600 bg-blush-50 rounded-lg hover:bg-blush-100 border-none cursor-pointer mt-1"
+                        className="p-2 text-blush-600 dark:text-blush-400 bg-blush-50 dark:bg-blush-900/30 rounded-lg hover:bg-blush-100 dark:hover:bg-blush-900/50 border-none cursor-pointer mt-1"
                       >
                         <HiTrash size={14} />
                       </button>
@@ -683,7 +691,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="pt-4 flex justify-end">
-                <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-200 hover:shadow-lg hover:-translate-y-0.5">
+                <button type="submit" className="px-6 py-2.5 bg-lavender-500 hover:bg-lavender-600 rounded-xl text-white font-semibold cursor-pointer border-none transition-colors shadow-md shadow-lavender-500/20 dark:shadow-lavender-900/20 hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lavender-900/30 hover:-translate-y-0.5">
                   Save Contact Settings
                 </button>
               </div>
@@ -692,21 +700,21 @@ export default function AdminDashboard() {
 
           {/* Message Inbox */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 transition-colors duration-300">
-            <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+            <div className="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-slate-800 pb-4">
               <div>
                 <h2 className="text-lg font-bold font-heading m-0 dark:text-white">Message Inbox</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 m-0 mt-1">{messages.length} message{messages.length !== 1 ? 's' : ''} received</p>
               </div>
             </div>
-            {messages.length === 0 ? (
+            {filteredMessages.length === 0 ? (
               <div className="text-center py-12">
-                <HiOutlineMail size={40} className="mx-auto text-gray-300 mb-3" />
-                <p className="text-gray-400 m-0">No messages yet</p>
+                <HiOutlineMail size={40} className="mx-auto text-gray-300 dark:text-gray-600 mb-3" />
+                <p className="text-gray-400 dark:text-gray-500 m-0">{messages.length === 0 ? 'No messages yet' : 'No messages match your search'}</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {messages.map(msg => (
-                  <div key={msg.id} className={`p-5 border rounded-xl transition-colors ${msg.read ? 'border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-800' : 'border-lavender-200 dark:border-lavender-900/50 bg-lavender-50/30 dark:bg-lavender-900/20'}`}>
+                {filteredMessages.map(msg => (
+                  <div key={msg.id} className={`p-5 border rounded-xl transition-colors ${msg.read ? 'border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800/80 shadow-sm' : 'border-lavender-300 dark:border-lavender-500/50 bg-lavender-50 dark:bg-lavender-900/30 shadow-md shadow-lavender-200/50 dark:shadow-lavender-900/20'}`}>
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h3 className="font-semibold text-gray-800 dark:text-white m-0 text-sm">{msg.subject}</h3>
@@ -740,7 +748,7 @@ export default function AdminDashboard() {
       {/* MODAL (Shared for all entities) */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fade-in-up">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-lavender-500/10 dark:shadow-lavender-900/20 w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fade-in-up">
             <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-slate-800">
               <h2 className="text-xl font-bold font-heading text-gray-800 dark:text-white m-0">
                 {editingItem ? 'Edit' : 'Add'} {modalType}
@@ -833,7 +841,7 @@ export default function AdminDashboard() {
               )}
 
               <div className="pt-4 flex justify-end gap-3">
-                <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 font-semibold cursor-pointer border-none transition-colors">Cancel</button>
+                <button type="button" onClick={closeModal} className="px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg text-gray-700 dark:text-gray-200 font-semibold cursor-pointer border-none transition-colors">Cancel</button>
                 <button type="submit" className="px-4 py-2 bg-lavender-500 hover:bg-lavender-600 rounded-lg text-white font-semibold cursor-pointer border-none transition-colors">Save {modalType}</button>
               </div>
             </form>

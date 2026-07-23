@@ -60,7 +60,7 @@ export default function Home() {
           {/* Left: Text */}
           <div className="animate-fade-in-up">
             <div className="flex items-center gap-2 mb-6">
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-lavender-50 border border-lavender-100 text-lavender-600 text-xs font-semibold">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-lavender-50 dark:bg-slate-800 border border-lavender-100 dark:border-slate-700 text-lavender-600 dark:text-lavender-300 text-xs font-semibold">
                 <HiOutlineSparkles size={14} />
                 Welcome to my portfolio
               </span>
@@ -88,7 +88,7 @@ export default function Home() {
             <div className="flex flex-wrap gap-4 mb-10">
               <Link
                 to="/projects"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm no-underline shadow-lg shadow-lavender-200 dark:shadow-lavender-900/30 hover:shadow-xl hover:shadow-lavender-300 dark:hover:shadow-lavender-900/40 hover:-translate-y-0.5 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lavender-500 to-lavender-600 text-white font-semibold text-sm no-underline shadow-md shadow-lavender-500/20 dark:shadow-none hover:shadow-lg hover:shadow-lavender-500/30 dark:hover:shadow-lg dark:hover:shadow-lavender-900/40 hover:-translate-y-0.5 transition-all duration-300"
               >
                 View My Work
                 <FiArrowRight size={16} />
@@ -98,7 +98,7 @@ export default function Home() {
                   href={profile.cvLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 font-semibold text-sm no-underline border border-lavender-200 dark:border-lavender-800 hover:bg-lavender-50 dark:hover:bg-slate-700 hover:-translate-y-0.5 transition-all duration-300 shadow-md shadow-lavender-100/50 dark:shadow-slate-900/40 hover:shadow-lg hover:shadow-lavender-200/50 dark:hover:shadow-slate-900/50"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 font-semibold text-sm no-underline border border-lavender-200 dark:border-lavender-800 hover:bg-lavender-50 dark:hover:bg-slate-700 hover:-translate-y-0.5 transition-all duration-300 shadow-md shadow-lavender-500/10 dark:shadow-lavender-900/10 hover:shadow-lg hover:shadow-lavender-500/20 dark:hover:shadow-lavender-900/20"
                 >
                   <FiDownload size={16} />
                   Download CV
@@ -160,7 +160,7 @@ export default function Home() {
       <section className="py-20 bg-white dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12 animate-fade-in-up">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-teal-50 text-teal-600 text-xs font-semibold uppercase tracking-widest mb-4 border border-teal-100">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-lavender-50 dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 text-xs font-semibold uppercase tracking-widest mb-4 border border-lavender-100 dark:border-slate-700">
               About Me
             </span>
             <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 dark:text-white mb-3">
@@ -175,7 +175,7 @@ export default function Home() {
             {values.slice(0, 3).map((item) => (
               <div
                 key={item.id || item.title}
-                className={`p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-md hover:shadow-xl hover:shadow-${item.color || 'lavender'}-200/50 hover:-translate-y-1 transition-all duration-500 animate-fade-in-up cursor-default`}
+                className={`p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-sm hover:shadow-xl hover:shadow-lavender-500/10 dark:hover:shadow-lavender-900/20 hover:-translate-y-1 transition-all duration-500 animate-fade-in-up cursor-default`}
               >
                 <span className="text-3xl block mb-4">{item.icon || '✨'}</span>
                 <h3 className="text-lg font-semibold font-heading text-gray-800 dark:text-white mb-2 m-0">{item.title}</h3>
@@ -200,7 +200,7 @@ export default function Home() {
       <section className="py-20 bg-gradient-to-b from-white to-cream-50 dark:from-slate-900 dark:to-slate-800/50 transition-colors duration-300">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12 animate-fade-in-up">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-gold-50 dark:bg-gold-900/30 text-gold-600 dark:text-gold-400 text-xs font-semibold uppercase tracking-widest mb-4 border border-gold-200 dark:border-gold-800">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-lavender-50 dark:bg-slate-800 text-lavender-600 dark:text-lavender-300 text-xs font-semibold uppercase tracking-widest mb-4 border border-lavender-100 dark:border-slate-700">
               Featured Work
             </span>
             <h2 className="text-3xl md:text-4xl font-bold font-heading text-gray-800 dark:text-white mb-3">
@@ -277,7 +277,7 @@ export default function Home() {
             </p>
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-lavender-600 font-semibold text-sm no-underline shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-lavender-600 dark:bg-lavender-500 dark:text-white font-semibold text-sm no-underline shadow-lg shadow-lavender-500/20 dark:shadow-none hover:shadow-xl hover:shadow-lavender-500/30 dark:hover:bg-lavender-600 dark:hover:shadow-lg dark:hover:shadow-lavender-900/40 hover:-translate-y-0.5 transition-all duration-300"
             >
               Get In Touch
               <FiArrowRight size={16} />

@@ -1,12 +1,30 @@
-import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Outlet, useSearchParams } from 'react-router-dom'
 import AdminSidebar from './AdminSidebar'
 import { HiOutlineBell, HiOutlineSearch, HiOutlineMenuAlt2, HiOutlineSun, HiOutlineMoon } from 'react-icons/hi'
 import { useTheme } from '../context/ThemeContext'
+import { getItems } from '../utils/dataStore'
 
 export default function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const { isDarkMode, toggleTheme } = useTheme()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const searchQuery = searchParams.get('q') || ''
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  useEffect(() => {
+    getItems('messages').then(msgs => {
+      setUnreadCount(msgs.filter(m => !m.read).length)
+    })
+  }, [])
+
+  const handleSearch = (e) => {
+    const q = e.target.value
+    const newParams = new URLSearchParams(searchParams)
+    if (q) newParams.set('q', q)
+    else newParams.delete('q')
+    setSearchParams(newParams)
+  }
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-slate-900 overflow-hidden relative">
@@ -34,6 +52,8 @@ export default function AdminLayout() {
               <input
                 type="text"
                 placeholder="Search..."
+                value={searchQuery}
+                onChange={handleSearch}
                 className="bg-transparent border-none outline-none text-sm text-gray-600 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 w-full font-sans"
               />
             </div>
@@ -45,9 +65,13 @@ export default function AdminLayout() {
             >
               {isDarkMode ? <HiOutlineSun size={20} /> : <HiOutlineMoon size={20} />}
             </button>
-            <button className="relative p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-lavender-500 dark:hover:text-lavender-300 hover:bg-lavender-50 dark:hover:bg-slate-800 border-none bg-transparent cursor-pointer transition-colors">
+            <button className="relative p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-lavender-500 dark:hover:text-lavender-300 hover:bg-lavender-50 dark:hover:bg-slate-800 border-none bg-transparent cursor-pointer transition-colors" onClick={() => setSearchParams({ tab: 'Contact' })}>
               <HiOutlineBell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blush-400 rounded-full" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-4 h-4 bg-blush-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
             </button>
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-lavender-300 to-teal-300 flex items-center justify-center text-white text-xs font-bold">
               SA
