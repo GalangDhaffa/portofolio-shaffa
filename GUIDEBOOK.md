@@ -103,6 +103,33 @@ Website Anda dilengkapi dengan sistem asisten pintar dan lonceng notifikasi.
 
 ---
 
+## 🤖 9. Tutorial Memasang Notifikasi Telegram
+Agar form kontak di website bisa mengirimkan pesan langsung ke Telegram Anda, Anda perlu menyiapkan dua hal: **Bot Token** dan **Chat ID**. Ikuti langkah-langkah mudah ini:
+
+**Langkah 1: Membuat Bot dan Mendapatkan Bot Token**
+1. Buka aplikasi Telegram, cari bot bernama **@BotFather** (pastikan ada centang birunya).
+2. Tekan **Start** atau ketik `/start`.
+3. Ketik `/newbot` untuk membuat bot baru Anda.
+4. Masukkan nama bot Anda (misal: `Asisten Web Shaffa`).
+5. Masukkan *username* bot Anda (harus diakhiri dengan kata bot, misal: `shaffa_web_bot`).
+6. Jika berhasil, BotFather akan memberikan pesan panjang yang berisi **Bot Token** Anda (kumpulan angka dan huruf acak seperti `123456789:ABCDefghIJKL...`). Salin (copy) token tersebut.
+
+**Langkah 2: Mendapatkan Chat ID Anda**
+1. Cari bot bernama **@userinfobot** atau **@getmyid_bot** di fitur pencarian Telegram.
+2. Tekan **Start**.
+3. Bot akan membalas dengan menampilkan ID Anda (berupa kumpulan angka, misal: `987654321`).
+4. Salin (copy) angka ID Anda tersebut.
+
+**Langkah 3: Memasang di Website Anda**
+1. Kembali ke **Admin Dashboard** website Anda, lalu buka tab **Contact**.
+2. Gulir ke bawah hingga menemukan bagian **Telegram Integration**.
+3. *Paste* (tempel) **Bot Token** yang Anda dapat dari BotFather ke kolom yang tersedia.
+4. *Paste* (tempel) **Chat ID** yang Anda dapat dari bot ID tadi ke kolom di sebelahnya.
+5. Tekan tombol ungu **Save Contact Settings**.
+6. Selesai! Sekarang silakan buka website utama Anda dan coba kirim pesan percobaan lewat Form Kontak untuk memastikannya masuk ke Telegram.
+
+---
+
 ## 💡 Tips & Trik Tambahan
 - **Gunakan HP atau Laptop:** Dashboard ini sudah 100% mendukung penggunaan lewat HP. Cukup buka menu lewat tombol pojok kiri atas dan geser (swipe) kategori menu yang Anda butuhkan.
 - **Ikon Sosial Media:** Di tab Contact, Anda bebas menambah link sosial media (Instagram, Twitter, LinkedIn). Masukkan nama platformnya, dan ikon akan secara otomatis menyesuaikan di website publik Anda!
